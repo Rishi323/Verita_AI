@@ -1,9 +1,19 @@
 import json
 from chat_request import send_openai_request
 
-def grade_transcription(transcription: str) -> dict:
+UX_FRAMEWORKS = {
+    "nielsen": "Nielsen's 10 Usability Heuristics",
+    "ideo": "IDEO's Human-Centered Design",
+    "double_diamond": "Double Diamond Design Process",
+    "lean_ux": "Lean UX",
+    "jobs_to_be_done": "Jobs to be Done (JTBD)"
+}
+
+def grade_transcription(transcription: str, framework: str) -> dict:
+    framework_description = UX_FRAMEWORKS.get(framework, "General UX research")
+    
     prompt = f"""
-    As a UX research expert, analyze the following interview transcript and provide an assessment. 
+    As a UX research expert, analyze the following interview transcript using the {framework_description} framework. 
     Focus on identifying key UX research insights, user pain points, and potential areas for improvement.
     
     Transcript:
@@ -15,8 +25,15 @@ def grade_transcription(transcription: str) -> dict:
         "user_pain_points": ["pain_point1", "pain_point2", ...],
         "areas_for_improvement": ["area1", "area2", ...],
         "overall_quality_score": 0-100,
-        "recommendations": ["recommendation1", "recommendation2", ...]
+        "recommendations": ["recommendation1", "recommendation2", ...],
+        "framework_specific_analysis": {{
+            "key1": "value1",
+            "key2": "value2",
+            ...
+        }}
     }}
+    
+    For the framework_specific_analysis, include relevant metrics or categories specific to the {framework_description} framework.
     """
 
     try:
@@ -30,7 +47,8 @@ def grade_transcription(transcription: str) -> dict:
             "user_pain_points": ["Unable to analyze"],
             "areas_for_improvement": ["System error"],
             "overall_quality_score": 0,
-            "recommendations": ["Please try again later"]
+            "recommendations": ["Please try again later"],
+            "framework_specific_analysis": {"error": "Unable to process"}
         }
     except Exception as e:
         print(f"Unexpected error: {e}")
@@ -39,7 +57,8 @@ def grade_transcription(transcription: str) -> dict:
             "user_pain_points": ["Unable to process"],
             "areas_for_improvement": ["System needs maintenance"],
             "overall_quality_score": 0,
-            "recommendations": ["Contact support"]
+            "recommendations": ["Contact support"],
+            "framework_specific_analysis": {"error": "System failure"}
         }
     
     # Calculate accuracy (this is a simplified version)

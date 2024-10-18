@@ -3,12 +3,12 @@ from flask_socketio import emit
 from extensions import db
 from models import Transcription, Assessment
 from fine_tuning import prepare_dataset, fine_tune_model
-from grading_framework import grade_transcription
+from grading_framework import grade_transcription, UX_FRAMEWORKS
 
 def init_routes(app, socketio):
     @app.route('/', methods=['GET'])
     def index():
-        return render_template('index.html')
+        return render_template('index.html', frameworks=UX_FRAMEWORKS)
 
     @app.route('/results/<int:transcription_id>')
     def results(transcription_id):
@@ -26,18 +26,20 @@ def init_routes(app, socketio):
     @socketio.on('transcribe')
     def handle_transcription(data):
         try:
-            print(f"Received transcription: {data['transcription']}")  # Debug print
+            print(f"Received transcription: {data['transcription']}")
+            print(f"Selected framework: {data['framework']}")
             transcription_text = data['transcription']
+            framework = data['framework']
             new_transcription = Transcription(text=transcription_text)
             db.session.add(new_transcription)
             db.session.commit()
 
-            assessment_result = grade_transcription(transcription_text)
+            assessment_result = grade_transcription(transcription_text, framework)
             new_assessment = Assessment(transcription_id=new_transcription.id, result=assessment_result)
             db.session.add(new_assessment)
             db.session.commit()
 
-            print(f"Emitting assessment result: {assessment_result}")  # Debug print
+            print(f"Emitting assessment result: {assessment_result}")
             emit('assessment_result', {
                 'transcription_id': new_transcription.id,
                 'assessment': assessment_result

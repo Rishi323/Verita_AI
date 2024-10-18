@@ -11,6 +11,16 @@
     <div class="container mt-5">
         <h1 class="mb-4">UX Research Interview Transcription Assessment</h1>
         <div class="mb-3">
+            <label for="framework" class="form-label">Select UX Research Framework:</label>
+            <select class="form-select" id="framework">
+                <option value="nielsen">Nielsen's 10 Usability Heuristics</option>
+                <option value="ideo">IDEO's Human-Centered Design</option>
+                <option value="double_diamond">Double Diamond Design Process</option>
+                <option value="lean_ux">Lean UX</option>
+                <option value="jobs_to_be_done">Jobs to be Done (JTBD)</option>
+            </select>
+        </div>
+        <div class="mb-3">
             <label for="transcription" class="form-label">Enter UX Research Interview Transcription:</label>
             <textarea class="form-control" id="transcription" rows="10" required></textarea>
         </div>
@@ -55,9 +65,11 @@
                 if (!isTranscribing) return;
 
                 const transcription = document.getElementById('transcription').value;
+                const framework = document.getElementById('framework').value;
                 console.log('Sending transcription:', transcription);
+                console.log('Selected framework:', framework);
                 document.getElementById('loading').style.display = 'inline-block';
-                socket.emit('transcribe', { transcription: transcription });
+                socket.emit('transcribe', { transcription: transcription, framework: framework });
             }, 5000); // Send transcription every 5 seconds
         }
 
@@ -77,6 +89,8 @@
                 <p>${data.assessment.overall_quality_score}/100</p>
                 <h4>Recommendations:</h4>
                 <ul>${data.assessment.recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>
+                <h4>Framework-specific Analysis:</h4>
+                <ul>${Object.entries(data.assessment.framework_specific_analysis).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}</ul>
             `;
         });
 
@@ -107,6 +121,8 @@
                         <p>${data.assessment.overall_quality_score}/100</p>
                         <h4>Recommendations:</h4>
                         <ul>${data.assessment.recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>
+                        <h4>Framework-specific Analysis:</h4>
+                        <ul>${Object.entries(data.assessment.framework_specific_analysis || {}).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}</ul>
                     `;
                 }
             })
