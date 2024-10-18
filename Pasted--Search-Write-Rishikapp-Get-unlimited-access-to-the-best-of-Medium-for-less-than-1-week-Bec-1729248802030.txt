@@ -1,0 +1,340 @@
+
+Search
+Write
+
+Rishikapp
+Get unlimited access to the best of Medium for less than $1/week.
+Become a member
+
+
+Top highlight
+
+UX Research Excellence Framework
+George Zhang
+George Zhang
+
+·
+Follow
+
+11 min read
+·
+Apr 1, 2021
+429
+
+
+3
+
+
+
+
+
+Based on a talk Molly Stevens and I gave at the Advancing Research 2021 on March 11, 2021. We have omitted the examples and cases to focus on the core framework in this article.
+
+Introduction
+This framework was conceptualized, implemented and improved in the four years we co-led the UX research team at Uber from the middle of 2016. We were only two members of our amazing extended research leadership team and we all worked together to develop and evolve this framework during those years.
+
+The framework consists of three main parts, specifically around defining our impact, improving and broadening our methods and developing partnerships — and moving earlier in the decision tree and development process.
+
+RESEARCH EXCELLENCE = IMPACT + METHOD + PARTNERSHIP
+
+This framework is the most useful for early career managers, and or research leads with growing teams. As an early manager, much of what you focus on are the people and understanding how to work with them. Ensuring that you have processes around people and their needs is core to this level. Our framework is focused on giving the growth of your team more structure — so that as you expand the size of your team, you also expand scope and impact.
+
+As you’re looking at how to use and adapt this framework, we recommend that you take elements, try them, and then let it grow and evolve. No framework will be perfect for every team — and you need to try it out in the context of your work and business to identify the good and bad pieces. All in all, this framework and approach is a good base for thinking about how to seek balance. Balance in the elements which are good for your individuals, your broader teams and the larger organization
+
+How did we get the framework?
+
+Molly and George at Uber (2017)
+Both of us, Molly Stevens and George Zhang, joined Uber in the middle of 2016, when Uber was undergoing a phase of their hyper-growth stage. As leaders at Uber, we saw a lot of change within the industry — and within our teams and within the types of users we needed to connect with. For example, when we first joined, we had a truly global footprint — operating on all but one continent. However, shortly after that Uber decided to sell its businesses in China to Didi Chuxing. Shortly after that, UberEats expanded greatly to take on a wider variety of business channels, followed by all new forms mobilities such as UberBike, UberFreight, etc.
+
+Despite many changes and challenges through the years, our UXR team managed to grow from 30-ish to more than 100 strong within three years. We had strong impacts from multiple global sites across all of the different Uber business lines, again thanks to our amazing extended research leadership team and their researchers.
+
+As a UXR in industry, and a leader, we can often experience both high and low moments while in our day to day roles. These can range from leading a team to conducting a research project — and everywhere in between. We believe we were not alone. What kinds of major changes that you have to manage? For example, Study design? Deliverables? Organizational changes? Global impacts?
+
+We asked people to share some situations when they had to make adjustments, and got the following typical examples.
+
+Priority for me this year is meaningfully scaling the research team toward strategic areas with a global lens. But how?
+
+Since the beginning of Covid, UXRs found it more difficult to get buy-ins from stakeholders. What can I do to support them?
+
+We got the headcount to add a quantitative researcher to the team. YAY! How do we set the researcher up for success?
+
+I’m having the first meeting with our new COO next week. How do I talk about the UXR team, and showcase our impact?
+
+These observations echoed very well to what we saw at Uber. Our process was to understand how we could provide a greater amount of structure, while also allowing each individual to thrive and grow in the way they choose.
+
+Through cultural surveys, listening sessions, project postmortems, and exit interviews, and so on we found UXR felt their projects were not as impactful as they could be, they felt stuck in career growth and couldn’t see clear forward and upward career paths, and overall team morale was heavily affected by the collaboration problems with stakeholders. In short, like you we often felt “stuck” from moment to moment.
+
+To get unstuck, we adopted and implemented an active process which consisted of four iterative stages: Understand the problems, Define the solutions, Commit to changes, Execute and adjust. And then rinse and repeat the process. We also acknowledge here that the processes in reality aren’t either straightforward or simple as they appear now. For example, we had to abandon many solutions before executing them.
+
+
+The active process to build the UX research excellence framework
+Out of the four years long iterative processes at Uber, we now have the simple UX Research Excellence framework to share with you, as your starter framework to use in your own workplace.
+
+#1 Impact — When and Where
+A strategy requires that you know what is important, and have ideas about how to prioritize all the important things — both for your teams and people. So it’s the first thing comes into place — the Prioritization Rubrics.
+
+Initially each area, if not each UX researcher, would receive requests and try to manage them, and not having reference points for what the most important work is overall. And honestly, we all know that most topics and requests come in to us as a very mixed bag of items that are hard to compare and contrast. Some seem small, some large, relative importance and relevance is difficult to sort and mix against each other.
+
+We decided to see if we could take our lists of projects, and provide a better way of thinking about the topics we could pursue. In the image below you can see some potential prioritization themes for the work that you do.
+
+
+Example prioritization themes you can use
+We can take an educated guess at a project’s level — and then use that to compare to the other projects across the team and the business.
+
+For example the Customer Impact, we can use a five-point Likert scale where 1 stands for Little overall Customer impact and 5 stands for Fundamental change to Customer experience and mental model. Looking at all the scales that matter to our teams, we have a rough idea about how to rank and sort the different requests. We would like to give a big shout-out to Michael Kronthal who led and rolled the Prioritization Rubrics out at Uber, which were adopted by UXR leaders in various business lines.
+
+Another aspect that is important as we think about prioritization is where does the project have impact.
+
+We created this Impact Matrix to help think about what kinds of projects and approaches could be done by the research team over the course of a whole year. Here are some examples of the kinds of methods that fit into each of the sections. We put these in the framework for your reference — and so you can think about what might fit into there for your team.
+
+
+The impact matrix and example projects/methods
+#2 Method — Apply Rigor
+While we were prioritizing research requests and initiatives at Uber, we paid great attention to the rigor of research methods as well. All over so many research projects in various product areas over years, we found two lenses to assess and select the right research method(s) for a specific problem space. One lens is the Reliability and Validity of a specific method, and the other is the Simplicity and Scalability in how you apply it.
+
+On the science-art spectrum, we believe UX research is more of a SCIENCE than an ART, and seek rigor in the two basic characteristics that apply to any scientific method: Reliability and Validity. The image below can easily help you understand what they mean. It depicts four totally different result patterns when the same shooter applies four different guns at the target (the Bull’s eye) from the same distance. Evidently, only the last gun is both reliable and valid for the shooter.
+
+Similarly as a UX researcher, we need to make sure the research methods we choose are working on the key problems of a situation, and make sure it is precisely measuring the right UX aspects. If we use a method that is both valid and reliable, other researchers can easily repeat and replicate our research to get similar results.
+
+
+Reliability and validity of a UX research method
+Simplicity and scalability are critical when it comes to apply the methods in our real work because we always have very limited resource and very tight schedule to do a research project, and we tackle very complex and dynamic problems where complex research approaches often further complicate the situations and result in more noises (e.g. false positives and false negatives).
+
+At many of our companies, we have a vast toolkit of methods for evidence gathering, like what is shown in the image below (borrowed from Norman Nielsen Group). The UX research methods can be qualitative and quantitative methods plotted all over the behavioral and attitudinal axis. Each of them is tailored to getting a particular type of information and insights.
+
+
+UX research methods matrix. Source: https://www.nngroup.com/articles/which-ux-research-methods/
+We’re very certain you have seen other similar charts somewhere else. The problem is — there are too many choices for us to choose from. :) Over many cases of method selection, we noticed something interesting. Being simple is the most complex therefore most difficult thing to do. Being complex is the simplest therefore easiest thing to do.
+
+We always encourage the team to follow the principle of parsimony, or the Occam’s Razor principle. When you select a method for a product situation, we recommend you start from the key problems and select one method to begin with. Then you add another method only when it’s absolutely necessary and you have strong rationales to add it. We value a researcher because she or he uses the simplest method to solve the most complex problems, not the other way around. Simple method is also easier to scale across user interfaces (PC, mobile, app, CRM channels, etc), and easier for other researchers to adopt and adapt. Simplicity and Scalability often go hand in hand in UX research projects, as we have noticed repeatedly.
+
+At Uber, we encouraged precise and timely documentation of research methods, processes and participants in each project, so that other researchers can repeat and replicate it. We also encouraged UX researchers to share their methodological learnings with fellow UX researchers and even across the company. For example, we sponsored the annual Survey Summit for the dozens of survey experts to exchange practices and socialize with each other.
+
+#3 Partnership — Work Together
+
+Partnership with other functions in a company is as complicated as it can be. At first, it looks like a big ball of mess in the image above. Full of twists, confusions, conflicts, and setbacks. We needed to do something to get closer to the right hand side, the first big question is “How does Partnership Work for Excellence? ”
+
+Uber wasn’t an exception at all. Early in 2017, Molly and I spent about several months, partnering with a group of leaders from all functions of Uber’s Driver team.
+
+We reviewed past projects, including successes and failures, highs and lows, delays and cancelations. We white-boarded the practices and processes, reflected the ups and downs along the co-riding journey, and came out with a How-We-Work Partnership Journey. This journey map consolidates the five major phases in a typical product development lifecycle, clarifies how different functions work all together but at different phases each function plays different roles.
+
+
+How we work cross functional partnership journey
+Traditionally, UXR is primarily slotted to work at the execution stage, doing lots of evaluative usability studies. During our cross-team reflection, we find that usability studies are absolutely important to get the desired success rate, speed, and satisfactions. However we also find case after case that UX researchers are called in too late because the solutions are not solving the real user problems in the first place. We call them “misplaced solutions.”
+
+In this refined process, UX research is brought up to the very beginning of a product life cycle, even before the solutions are defined. We call this move “Research Goes Upstream’’, in order to contribute and make a difference as early as possible in the processes. It works way better to ground the proposed solutions when user insights are mostly needed, and avoids many otherwise costly downstream fixes.
+
+Let the Framework Work
+In a nutshell, the framework looks like below.
+
+
+In order to support researchers in understanding the day to day of this framework, among many things we built out a monthly RESEARCH EXCELLENCE AWARD. This helped us to point out where and when people were conducting high quality work that had a big impact and was collaborative within the team and or with stakeholders. As a result, we built our happy, performing and excellent global team.
+
+We are both finding ways to implement elements of this basic framework in both of our current roles. For example, in Molly’s role at Booking we have rolled out a version of the prioritization framework. At George’s current company, Course Hero, the UX research team is quite small but the framework has been leveraged to prioritize research requests, and foster our collaborations with data science and market research. Both companies are drastically different from Uber, and they are drastically different from each other. However we are able to apply it and make some adaptations for our own specific situations.
+
+We are excited to hear how you evolve the base framework in your workplace — let us know how it goes.
+
+Thank you everyone, especially Uber UXRs and the extended research leadership! Without them framing, building and experimenting all parts of the research framework, we simply would not have it, or have the confidence to share it more widely.
+
+Molly Stevens & George Zhang
+
+UX Research
+Excellence
+Framework
+Leadership
+Teamwork
+429
+
+
+3
+
+
+
+
+George Zhang
+Written by George Zhang
+591 Followers
+Global Head of Product Design, Brightly a Siemens Company. Formerly Google, Uber, Intel, Course Hero. Received Ph.D in I/O psychology.
+
+Follow
+
+More from George Zhang
+“Start, Stop, Continue” Debrief
+George Zhang
+George Zhang
+
+in
+
+SSC Debrief
+
+“Start, Stop, Continue” Debrief
+Make it easy to drive insight-based actions with team
+Jun 26, 2020
+60
+
+
+Singularity, Learning, and the Future
+George Zhang
+George Zhang
+
+Singularity, Learning, and the Future
+Based on a recent half-hour presentation I gave at the UX Crunch meetup on “HCD in Driving Effective Learning”. Some examples were removed…
+Jul 8, 2021
+11
+
+
+Waiting with Uncertainty
+George Zhang
+George Zhang
+
+Waiting with Uncertainty
+Don’t create a limbo for users
+Sep 20, 2020
+142
+
+
+Lenses to Understand UX Researchers
+George Zhang
+George Zhang
+
+Lenses to Understand UX Researchers
+Skills, stages, specialties, and work-styles are the four lenses that I found useful to understand a user experience (UX) researcher. They…
+Dec 12, 2019
+61
+
+
+See all from George Zhang
+Recommended from Medium
+UX Analytics is your user experience strategy
+Artur Ryhus 🇺🇦
+Artur Ryhus 🇺🇦
+
+in
+
+Bootcamp
+
+UX Analytics is your user experience strategy
+In today’s data-driven world, analytics has become an indispensable tool for businesses of all sizes. It provides a wealth of insights into…
+
+Aug 20
+48
+
+
+How to Measure the Impact of UX Research? [Metrics-to-use]
+Iva Buzuk
+Iva Buzuk
+
+How to Measure the Impact of UX Research? [Metrics-to-use]
+For any successful digital product improving user experience (UX) is a key aspect. But how do we know that our UX research is making a…
+
+May 26
+325
+2
+
+
+Lists
+
+
+
+How to Run More Meaningful 1:1 Meetings
+11 stories
+·
+484 saves
+
+
+
+How to Lead Well as a New Manager
+14 stories
+·
+736 saves
+
+
+
+Intro to People Ops: Not Your Mama's HR
+8 stories
+·
+109 saves
+
+
+
+Company Offsite Reading List
+8 stories
+·
+157 saves
+An illustration of a hiker in front of a vast landscape
+Jake Geller
+Jake Geller
+
+in
+
+UX Collective
+
+Navigating the DesignOps wilderness
+How to define a compelling Design Operations roadmap and build the trust you’ll need to execute on it.
+Mar 9
+324
+3
+
+
+Planning a Design System: Insights from Nathan Curtis’s Framework
+Lisa Demchenko
+Lisa Demchenko
+
+in
+
+UX Planet
+
+Planning a Design System: Insights from Nathan Curtis’s Framework
+How I planned and built my first Design System as a solo designer
+
+Jun 4
+100
+
+
+A very big guide to survey design
+H Locke
+H Locke
+
+A very big guide to survey design
+For UX, customer and user research
+
+Mar 9
+343
+
+
+Steve Jobs Hated User Research. Here’s Why I Agree With Him.
+Dr. Derek Austin 🥳
+Dr. Derek Austin 🥳
+
+in
+
+Career Programming
+
+Steve Jobs Hated User Research. Here’s Why I Agree With Him.
+People have no idea what they want, and product managers would be better served by writing tickets for their engineers. Here’s why your…
+
+Jul 31
+2.6K
+135
+
+
+See more recommendations
+Help
+
+Status
+
+About
+
+Careers
+
+Press
+
+Blog
+
+Privacy
+
+Terms
+
+Text to speech
+
+Teams
