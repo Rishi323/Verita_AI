@@ -1,6 +1,7 @@
 import os
 from flask import Flask
 from flask_socketio import SocketIO
+from flask_migrate import Migrate
 from extensions import db
 
 app = Flask(__name__)
@@ -12,9 +13,10 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 }
 
 db.init_app(app)
+migrate = Migrate(app, db)
 socketio = SocketIO(app)
 
-from models import Transcription, Assessment
+from models import Transcription, Assessment, Project
 from routes import init_routes
 
 init_routes(app, socketio)

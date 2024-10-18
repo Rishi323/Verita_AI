@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_socketio import emit
 from extensions import db
-from models import Transcription, Assessment
+from models import Transcription, Assessment, Project
 from fine_tuning import prepare_dataset, fine_tune_model
 from grading_framework import grade_transcription, UX_FRAMEWORKS
 
@@ -23,6 +23,22 @@ def init_routes(app, socketio):
         flash(f"Model fine-tuned successfully. New model name: {model_name}", 'success')
         return redirect(url_for('index'))
 
+    @app.route('/dashboard')
+    def dashboard():
+        projects = Project.query.all()
+        return render_template('dashboard.html', projects=projects)
+
+    @app.route('/project/<int:project_id>')
+    def project_details(project_id):
+        project = Project.query.get_or_404(project_id)
+        transcriptions = Transcription.query.filter_by(project_id=project_id).all()
+        assessments = []
+        for transcription in transcriptions:
+            assessment = Assessment.query.filter_by(transcription_id=transcription.id).first()
+            if assessment:
+                assessments.append(assessment)
+        return render_template('project_details.html', project=project, transcriptions=transcriptions, assessments=assessments)
+
     @socketio.on('transcribe')
     def handle_transcription(data):
         try:
@@ -30,7 +46,9 @@ def init_routes(app, socketio):
             print(f"Selected framework: {data['framework']}")
             transcription_text = data['transcription']
             framework = data['framework']
-            new_transcription = Transcription(text=transcription_text)
+            project_id = data.get('project_id')
+            
+            new_transcription = Transcription(text=transcription_text, project_id=project_id)
             db.session.add(new_transcription)
             db.session.commit()
 
@@ -59,3 +77,16 @@ def init_routes(app, socketio):
             })
         else:
             return jsonify({'error': 'No assessments available'}), 404
+
+    @app.route('/create-project', methods=['POST'])
+    def create_project():
+        name = request.form.get('project_name')
+        description = request.form.get('project_description')
+        if name:
+            new_project = Project(name=name, description=description)
+            db.session.add(new_project)
+            db.session.commit()
+            flash('Project created successfully', 'success')
+        else:
+            flash('Project name is required', 'error')
+        return redirect(url_for('dashboard'))

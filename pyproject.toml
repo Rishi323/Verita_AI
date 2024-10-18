@@ -12,4 +12,5 @@ dependencies = [
     "speechrecognition>=3.10.4",
     "flask-socketio>=5.4.1",
     "eventlet",
+    "flask-migrate>=4.0.7",
 ]
