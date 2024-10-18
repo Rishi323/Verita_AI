@@ -6,7 +6,8 @@ UX_FRAMEWORKS = {
     "ideo": "IDEO's Human-Centered Design",
     "double_diamond": "Double Diamond Design Process",
     "lean_ux": "Lean UX",
-    "jobs_to_be_done": "Jobs to be Done (JTBD)"
+    "jobs_to_be_done": "Jobs to be Done (JTBD)",
+    "jump_associates": "Jump Associates' UX Research Framework"
 }
 
 def grade_transcription(transcription: str, framework: str) -> dict:
