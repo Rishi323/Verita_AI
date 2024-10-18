@@ -26,6 +26,7 @@ def init_routes(app, socketio):
     @socketio.on('transcribe')
     def handle_transcription(data):
         try:
+            print(f"Received transcription: {data['transcription']}")  # Debug print
             transcription_text = data['transcription']
             new_transcription = Transcription(text=transcription_text)
             db.session.add(new_transcription)
@@ -36,6 +37,7 @@ def init_routes(app, socketio):
             db.session.add(new_assessment)
             db.session.commit()
 
+            print(f"Emitting assessment result: {assessment_result}")  # Debug print
             emit('assessment_result', {
                 'transcription_id': new_transcription.id,
                 'assessment': assessment_result

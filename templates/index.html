@@ -18,6 +18,9 @@
         <button id="stopTranscription" class="btn btn-danger" style="display: none;">Stop Transcription</button>
         <hr>
         <h2>Real-time Assessment</h2>
+        <div id="loading" class="spinner-border text-primary" role="status" style="display: none;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
         <div id="assessment-results" class="mt-3"></div>
         <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
         <hr>
@@ -52,27 +55,34 @@
                 if (!isTranscribing) return;
 
                 const transcription = document.getElementById('transcription').value;
+                console.log('Sending transcription:', transcription);
+                document.getElementById('loading').style.display = 'inline-block';
                 socket.emit('transcribe', { transcription: transcription });
             }, 5000); // Send transcription every 5 seconds
         }
 
         socket.on('assessment_result', (data) => {
+            console.log('Received assessment result:', data);
+            document.getElementById('loading').style.display = 'none';
             const assessmentDiv = document.getElementById('assessment-results');
             assessmentDiv.innerHTML = `
-                <h3>Key Insights:</h3>
+                <h3>Latest Assessment:</h3>
+                <h4>Key Insights:</h4>
                 <ul>${data.assessment.key_insights.map(insight => `<li>${insight}</li>`).join('')}</ul>
-                <h3>User Pain Points:</h3>
+                <h4>User Pain Points:</h4>
                 <ul>${data.assessment.user_pain_points.map(point => `<li>${point}</li>`).join('')}</ul>
-                <h3>Areas for Improvement:</h3>
+                <h4>Areas for Improvement:</h4>
                 <ul>${data.assessment.areas_for_improvement.map(area => `<li>${area}</li>`).join('')}</ul>
-                <h3>Overall Quality Score:</h3>
+                <h4>Overall Quality Score:</h4>
                 <p>${data.assessment.overall_quality_score}/100</p>
-                <h3>Recommendations:</h3>
+                <h4>Recommendations:</h4>
                 <ul>${data.assessment.recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>
             `;
         });
 
         socket.on('assessment_error', (data) => {
+            console.error('Assessment error:', data);
+            document.getElementById('loading').style.display = 'none';
             const errorDiv = document.getElementById('error-message');
             errorDiv.textContent = `Error: ${data.error}`;
             errorDiv.style.display = 'block';
@@ -82,6 +92,7 @@
         fetch('/get-latest-assessment')
             .then(response => response.json())
             .then(data => {
+                console.log('Fetched latest assessment:', data);
                 if (data.assessment) {
                     const assessmentDiv = document.getElementById('assessment-results');
                     assessmentDiv.innerHTML = `
