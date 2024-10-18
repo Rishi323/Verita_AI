@@ -19,8 +19,28 @@ def grade_transcription(transcription: str) -> dict:
     }}
     """
 
-    response = send_openai_request(prompt)
-    assessment = json.loads(response)
+    try:
+        response = send_openai_request(prompt)
+        assessment = json.loads(response)
+    except json.JSONDecodeError as e:
+        print(f"JSON decoding error: {e}")
+        print(f"Response content: {response}")
+        assessment = {
+            "key_insights": ["Error in processing"],
+            "user_pain_points": ["Unable to analyze"],
+            "areas_for_improvement": ["System error"],
+            "overall_quality_score": 0,
+            "recommendations": ["Please try again later"]
+        }
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        assessment = {
+            "key_insights": ["Unexpected error"],
+            "user_pain_points": ["Unable to process"],
+            "areas_for_improvement": ["System needs maintenance"],
+            "overall_quality_score": 0,
+            "recommendations": ["Contact support"]
+        }
     
     # Calculate accuracy (this is a simplified version)
     accuracy = len(assessment['key_insights']) / 5 * 100  # Assuming 5 key insights is perfect
