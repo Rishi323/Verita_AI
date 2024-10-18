@@ -32,7 +32,7 @@ def fine_tune_model(dataset_file):
 
     fine_tuning_job = openai_client.fine_tuning.jobs.create(
         training_file=file_id,
-        model="gpt-4o"
+        model="gpt-3.5-turbo-0613"
     )
 
     # Wait for the fine-tuning to complete (this is a simplified version)
