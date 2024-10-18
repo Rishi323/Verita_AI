@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Research Interview Transcription Assessment</title>
+    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">UX Research Interview Transcription Assessment</h1>
+        <form action="{{ url_for('index') }}" method="post">
+            <div class="mb-3">
+                <label for="transcription" class="form-label">Enter UX Research Interview Transcription:</label>
+                <textarea class="form-control" id="transcription" name="transcription" rows="10" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Assess Transcription</button>
+        </form>
+        <hr>
+        <form action="{{ url_for('fine_tune') }}" method="post">
+            <button type="submit" class="btn btn-secondary">Fine-tune Model</button>
+        </form>
+    </div>
+</body>
+</html>
