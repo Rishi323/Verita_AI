@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_socketio import SocketIO
 from extensions import db
 
 app = Flask(__name__)
@@ -11,13 +12,14 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 }
 
 db.init_app(app)
+socketio = SocketIO(app)
 
 from models import Transcription, Assessment
 from routes import init_routes
 
-init_routes(app)
+init_routes(app, socketio)
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(host='0.0.0.0', port=5000)
+    socketio.run(app, host='0.0.0.0', port=5000)

@@ -5,21 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UX Research Interview Transcription Assessment</title>
     <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
     <div class="container mt-5">
         <h1 class="mb-4">UX Research Interview Transcription Assessment</h1>
-        <form action="{{ url_for('index') }}" method="post">
-            <div class="mb-3">
-                <label for="transcription" class="form-label">Enter UX Research Interview Transcription:</label>
-                <textarea class="form-control" id="transcription" name="transcription" rows="10" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Assess Transcription</button>
-        </form>
+        <div class="mb-3">
+            <label for="transcription" class="form-label">Enter UX Research Interview Transcription:</label>
+            <textarea class="form-control" id="transcription" rows="10" required></textarea>
+        </div>
+        <button id="startTranscription" class="btn btn-primary">Start Real-time Transcription</button>
+        <button id="stopTranscription" class="btn btn-danger" style="display: none;">Stop Transcription</button>
+        <hr>
+        <h2>Real-time Assessment</h2>
+        <div id="assessment-results" class="mt-3"></div>
         <hr>
         <form action="{{ url_for('fine_tune') }}" method="post">
             <button type="submit" class="btn btn-secondary">Fine-tune Model</button>
         </form>
     </div>
+
+    <script>
+        const socket = io();
+        let isTranscribing = false;
+
+        document.getElementById('startTranscription').addEventListener('click', () => {
+            isTranscribing = true;
+            document.getElementById('startTranscription').style.display = 'none';
+            document.getElementById('stopTranscription').style.display = 'inline-block';
+            document.getElementById('assessment-results').innerHTML = '';
+            startRealTimeTranscription();
+        });
+
+        document.getElementById('stopTranscription').addEventListener('click', () => {
+            isTranscribing = false;
+            document.getElementById('startTranscription').style.display = 'inline-block';
+            document.getElementById('stopTranscription').style.display = 'none';
+        });
+
+        function startRealTimeTranscription() {
+            if (!isTranscribing) return;
+
+            const transcription = document.getElementById('transcription').value;
+            socket.emit('transcribe', { transcription: transcription });
+
+            setTimeout(startRealTimeTranscription, 5000); // Send transcription every 5 seconds
+        }
+
+        socket.on('assessment_result', (data) => {
+            const assessmentDiv = document.getElementById('assessment-results');
+            assessmentDiv.innerHTML = `
+                <h3>Key Insights:</h3>
+                <ul>${data.assessment.key_insights.map(insight => `<li>${insight}</li>`).join('')}</ul>
+                <h3>User Pain Points:</h3>
+                <ul>${data.assessment.user_pain_points.map(point => `<li>${point}</li>`).join('')}</ul>
+                <h3>Areas for Improvement:</h3>
+                <ul>${data.assessment.areas_for_improvement.map(area => `<li>${area}</li>`).join('')}</ul>
+                <h3>Overall Quality Score:</h3>
+                <p>${data.assessment.overall_quality_score}/100</p>
+                <h3>Recommendations:</h3>
+                <ul>${data.assessment.recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>
+            `;
+        });
+    </script>
 </body>
 </html>
