@@ -1,5 +1,9 @@
 import json
+import logging
 from chat_request import send_openai_request
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 UX_FRAMEWORKS = {
     "nielsen": "Nielsen's 10 Usability Heuristics",
@@ -12,6 +16,18 @@ UX_FRAMEWORKS = {
 
 def grade_transcription(transcription: str, framework: str) -> dict:
     framework_description = UX_FRAMEWORKS.get(framework, "General UX research")
+    
+    # Check for empty or very short inputs
+    if not transcription or len(transcription.split()) < 10:
+        logger.warning(f"Short or empty input detected: {transcription}")
+        return {
+            "key_insights": ["Input too short for meaningful analysis"],
+            "user_pain_points": ["Unable to identify pain points from short input"],
+            "areas_for_improvement": ["Provide more detailed transcription for better analysis"],
+            "overall_quality_score": 0,
+            "recommendations": ["Ensure the transcription is complete and detailed enough for analysis"],
+            "framework_specific_analysis": {"error": "Input too short for framework-specific analysis"}
+        }
     
     prompt = f"""
     As a UX research expert, analyze the following interview transcript using the {framework_description} framework. 
@@ -38,34 +54,38 @@ def grade_transcription(transcription: str, framework: str) -> dict:
     """
 
     try:
+        logger.info(f"Sending request to OpenAI API for framework: {framework}")
         response = send_openai_request(prompt)
         assessment = json.loads(response)
+        logger.info("Successfully received and parsed OpenAI API response")
+        
+        # Validate the assessment structure
+        required_keys = ["key_insights", "user_pain_points", "areas_for_improvement", "overall_quality_score", "recommendations", "framework_specific_analysis"]
+        for key in required_keys:
+            if key not in assessment:
+                raise ValueError(f"Missing required key in assessment: {key}")
+        
+        # Ensure overall_quality_score is within the correct range
+        assessment["overall_quality_score"] = max(0, min(100, assessment["overall_quality_score"]))
+        
+        return assessment
     except json.JSONDecodeError as e:
-        print(f"JSON decoding error: {e}")
-        print(f"Response content: {response}")
-        assessment = {
-            "key_insights": ["Error in processing"],
-            "user_pain_points": ["Unable to analyze"],
-            "areas_for_improvement": ["System error"],
-            "overall_quality_score": 0,
-            "recommendations": ["Please try again later"],
-            "framework_specific_analysis": {"error": "Unable to process"}
-        }
+        logger.error(f"JSON decoding error: {e}")
+        logger.error(f"Response content: {response}")
+        return create_error_assessment("JSON parsing error")
+    except ValueError as e:
+        logger.error(f"Value error in assessment: {e}")
+        return create_error_assessment(str(e))
     except Exception as e:
-        print(f"Unexpected error: {e}")
-        assessment = {
-            "key_insights": ["Unexpected error"],
-            "user_pain_points": ["Unable to process"],
-            "areas_for_improvement": ["System needs maintenance"],
-            "overall_quality_score": 0,
-            "recommendations": ["Contact support"],
-            "framework_specific_analysis": {"error": "System failure"}
-        }
-    
-    # Calculate accuracy (this is a simplified version)
-    accuracy = len(assessment['key_insights']) / 5 * 100  # Assuming 5 key insights is perfect
-    
-    if accuracy < 80:
-        assessment['recommendations'].append("Consider re-training the model to improve accuracy in identifying key insights.")
-    
-    return assessment
+        logger.error(f"Unexpected error in grade_transcription: {e}")
+        return create_error_assessment("Unexpected error")
+
+def create_error_assessment(error_message: str) -> dict:
+    return {
+        "key_insights": [f"Error: {error_message}"],
+        "user_pain_points": ["Unable to analyze due to error"],
+        "areas_for_improvement": ["Improve system's error handling"],
+        "overall_quality_score": 0,
+        "recommendations": ["Please try again or contact support if the issue persists"],
+        "framework_specific_analysis": {"error": error_message}
+    }

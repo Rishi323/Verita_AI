@@ -130,7 +130,12 @@
                     `;
                 }
             })
-            .catch(error => console.error('Error fetching latest assessment:', error));
+            .catch(error => {
+                console.error('Error fetching latest assessment:', error);
+                const errorDiv = document.getElementById('error-message');
+                errorDiv.textContent = `Error fetching latest assessment: ${error.message}`;
+                errorDiv.style.display = 'block';
+            });
     </script>
 </body>
 </html>
