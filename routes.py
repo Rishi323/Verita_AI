@@ -17,8 +17,12 @@ def init_routes(app, socketio):
         return render_template('index.html')
 
     @app.route('/assessment', methods=['GET'])
-    def landing():
+    def assessment():
         return render_template('assessment.html', frameworks=UX_FRAMEWORKS)
+
+    @app.route('/assessmentold', methods=['GET'])
+    def assessmentold():
+        return render_template('assessmentold.html', frameworks=UX_FRAMEWORKS)
 
     @app.route('/features', methods=['GET'])
     def login():

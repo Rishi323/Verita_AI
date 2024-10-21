@@ -1,44 +1,131 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UX Research Interview Transcription Assessment</title>
-    <link rel="stylesheet" href="https://cdn.replit.com/agent/bootstrap-agent-dark-theme.min.css">
+    <title>Verita AI - Interview Transcript Assessment</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <!-- <script>
+        tailwind.config = {
+            corePlugins: {
+                preflight: false,
+            },
+        }
+    </script> -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <div class="container mt-5">
-        <h1 class="mb-4">UX Research Interview Transcription Assessment</h1>
-        <div class="mb-3">
-            <label for="framework" class="form-label">Select UX Research Framework:</label>
-            <select class="form-select" id="framework">
-                <option value="nielsen">Nielsen's 10 Usability Heuristics</option>
-                <option value="ideo">IDEO's Human-Centered Design</option>
-                <option value="double_diamond">Double Diamond Design Process</option>
-                <option value="lean_ux">Lean UX</option>
-                <option value="jobs_to_be_done">Jobs to be Done (JTBD)</option>
-                <option value="jump_associates">Jump Associates' UX Research Framework</option>
-            </select>
+<body class="bg-white">
+    <header class="bg-blue-500 p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <img src="/placeholder.svg?height=40&width=120" alt="Verita AI Logo" class="h-10">
+            <div class="space-x-4">
+                <a href="/" class="text-white">Home</a>
+                <a href="/features" class="text-white">Features</a>
+                <a href="#" class="text-white">Pricing</a>
+                <a href="#" class="text-white">Resources</a>
+                <a href="#" class="bg-white text-blue-500 px-4 py-2 rounded-full font-semibold">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto py-12">
+        <h1 class="text-3xl font-bold mb-8 text-center">Interview Transcript Assessment</h1>
+
+        <div class="max-w-3xl mx-auto">
+            <div class="mb-6">
+                <label for="framework" class="block text-sm font-medium text-gray-700 mb-2">Select UX Research Framework</label>
+                <select id="framework" name="framework" class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="nielsen">Nielsen's 10 Usability Heuristics</option>
+                    <option value="ideo">IDEO's Human-Centered Design</option>
+                    <option value="double_diamond">Double Diamond Design Process</option>
+                    <option value="lean_ux">Lean UX</option>
+                    <option value="jobs_to_be_done">Jobs to be Done (JTBD)</option>
+                    <option value="jump_associates">Jump Associates' UX Research Framework</option>
+                </select>
+            </div>
+
+            <div class="mb-6">
+                <label for="transcription" class="block text-sm font-medium text-gray-700 mb-2">Paste Interview Transcript</label>
+                <textarea id="transcription" name="transcription" rows="10" required class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" placeholder="Paste your interview transcript here..."></textarea>
+            </div>
+
+            <div class="flex justify-between items-center mb-8">
+                <!-- <button class="bg-blue-500 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-blue-600 transition duration-300">Analyze Transcript</button> -->
+                <button id="startTranscription" class="bg-green-500 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-green-600 transition duration-300">Start Real-Time Transcription</button>
+                <button id="stopTranscription" class="bg-red-500 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-red-600 transition duration-300" style="display: none;">Stop Real-Time Transcription</button>
+
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-lg">
+                <h2 class="text-xl font-bold mb-4">Interview Feedback</h2>
+                <div id="feedback" class="space-y-4 leading-normal">
+                    <p class="text-gray-700">Your interview feedback will appear here after analysis.</p>
+                    <!-- Placeholder for feedback content -->
+                    <div id="loading" class="spinner-border text-primary" role="status" style="display: none;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <!-- <div class="hidden"> -->
+                        <!-- <h3 class="font-semibold text-lg mb-2">Key Insights:</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Insight 1</li>
+                            <li>Insight 2</li>
+                            <li>Insight 3</li>
+                        </ul>
+                        <h3 class="font-semibold text-lg mt-4 mb-2">Recommendations:</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li>Recommendation 1</li>
+                            <li>Recommendation 2</li>
+                            <li>Recommendation 3</li>
+                        </ul> -->
+                    <div id="assessment-results" class="mt-3"></div>
+                    <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
+                    <!-- </div> -->
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="transcription" class="form-label">Enter UX Research Interview Transcription:</label>
-            <textarea class="form-control" id="transcription" rows="10" required></textarea>
+    </main>
+
+    <footer class="bg-blue-500 text-white py-12 mt-12">
+        <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <img src="/placeholder.svg?height=40&width=120" alt="Verita AI Logo" class="h-10 mb-4">
+                <p>Empowering UX researchers worldwide</p>
+            </div>
+            <div>
+                <h3 class="font-bold mb-4">Product</h3>
+                <ul class="space-y-2">
+                    <li><a href="/features">Features</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Integrations</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-bold mb-4">Resources</h3>
+                <ul class="space-y-2">
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Careers</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="font-bold mb-4">Company</h3>
+                <ul class="space-y-2">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
         </div>
-        <button id="startTranscription" class="btn btn-primary">Start Real-time Transcription</button>
-        <button id="stopTranscription" class="btn btn-danger" style="display: none;">Stop Transcription</button>
-        <hr>
-        <h2>Real-time Assessment</h2>
-        <div id="loading" class="spinner-border text-primary" role="status" style="display: none;">
-            <span class="visually-hidden">Loading...</span>
+        <div class="container mx-auto mt-8 pt-8 border-t border-blue-400 text-center">
+            <p>&copy; 2024 Verita AI. All rights reserved.</p>
         </div>
-        <div id="assessment-results" class="mt-3"></div>
-        <div id="error-message" class="alert alert-danger mt-3" style="display: none;"></div>
-        <hr>
-        <form action="{{ url_for('fine_tune') }}" method="post">
-            <button type="submit" class="btn btn-secondary">Fine-tune Model</button>
-        </form>
-    </div>
+    </footer>
 
     <script>
         const socket = io();
@@ -111,19 +198,19 @@
                 if (data.assessment) {
                     const assessmentDiv = document.getElementById('assessment-results');
                     assessmentDiv.innerHTML = `
-                        <h3>Latest Assessment:</h3>
-                        <h4>Key Insights:</h4>
-                        <ul>${data.assessment.key_insights.map(insight => `<li>${insight}</li>`).join('')}</ul>
-                        <h4>User Pain Points:</h4>
-                        <ul>${data.assessment.user_pain_points.map(point => `<li>${point}</li>`).join('')}</ul>
-                        <h4>Areas for Improvement:</h4>
-                        <ul>${data.assessment.areas_for_improvement.map(area => `<li>${area}</li>`).join('')}</ul>
-                        <h4>Overall Quality Score:</h4>
+                        <h3 class="text-xl font-bold">Latest Assessment:</h3>
+                        <h4 class="text-lg font-semibold my-4">Key Insights:</h4>
+                        <ul class="list-inside list-disc pl-4">${data.assessment.key_insights.map(insight => `<li>${insight}</li>`).join('')}</ul>
+                        <h4 class="font-semibold text-lg my-4">User Pain Points:</h4>
+                        <ul class="list-inside list-disc pl-4">${data.assessment.user_pain_points.map(point => `<li>${point}</li>`).join('')}</ul>
+                        <h4 class="font-semibold my-4">Areas for Improvement:</h4>
+                        <ul class="list-inside list-disc pl-4">${data.assessment.areas_for_improvement.map(area => `<li>${area}</li>`).join('')}</ul>
+                        <h4 class="font-semibold my-4">Overall Quality Score:</h4>
                         <p>${data.assessment.overall_quality_score}/100</p>
-                        <h4>Recommendations:</h4>
-                        <ul>${data.assessment.recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>
-                        <h4>Framework-specific Analysis:</h4>
-                        <ul>${Object.entries(data.assessment.framework_specific_analysis || {}).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}</ul>
+                        <h4 class="font-semibold my-4">Recommendations:</h4>
+                        <ul class="list-inside list-disc pl-4">${data.assessment.recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>
+                        <h4 class="font-semibold my-4">Framework-specific Analysis:</h4>
+                        <ul class="list-inside list-disc pl-4">${Object.entries(data.assessment.framework_specific_analysis || {}).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}</ul>
                     `;
                 }
             })
