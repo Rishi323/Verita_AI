@@ -200,19 +200,19 @@
             document.getElementById('loading').style.display = 'none';
             const assessmentDiv = document.getElementById('assessment-results');
             assessmentDiv.innerHTML = `
-                <h3>Latest Assessment:</h3>
-                <h4>Key Insights:</h4>
-                <ul>${data.assessment.key_insights.map(insight => `<li>${insight}</li>`).join('')}</ul>
-                <h4>User Pain Points:</h4>
-                <ul>${data.assessment.user_pain_points.map(point => `<li>${point}</li>`).join('')}</ul>
-                <h4>Areas for Improvement:</h4>
-                <ul>${data.assessment.areas_for_improvement.map(area => `<li>${area}</li>`).join('')}</ul>
-                <h4>Overall Quality Score:</h4>
+                <h3 class="text-xl font-bold">Latest Assessment:</h3>
+                <h4 class="text-lg font-semibold my-4">Key Insights:</h4>
+                <ul class="list-inside list-disc pl-4">${data.assessment.key_insights.map(insight => `<li>${insight}</li>`).join('')}</ul>
+                <h4 class="font-semibold text-lg my-4">User Pain Points:</h4>
+                <ul class="list-inside list-disc pl-4">${data.assessment.user_pain_points.map(point => `<li>${point}</li>`).join('')}</ul>
+                <h4 class="font-semibold my-4">Areas for Improvement:</h4>
+                <ul class="list-inside list-disc pl-4">${data.assessment.areas_for_improvement.map(area => `<li>${area}</li>`).join('')}</ul>
+                <h4 class="font-semibold my-4">Overall Quality Score:</h4>
                 <p>${data.assessment.overall_quality_score}/100</p>
-                <h4>Recommendations:</h4>
-                <ul>${data.assessment.recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>
-                <h4>Framework-specific Analysis:</h4>
-                <ul>${Object.entries(data.assessment.framework_specific_analysis).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}</ul>
+                <h4 class="font-semibold my-4">Recommendations:</h4>
+                <ul class="list-inside list-disc pl-4">${data.assessment.recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>
+                <h4 class="font-semibold my-4">Framework-specific Analysis:</h4>
+                <ul class="list-inside list-disc pl-4">${Object.entries(data.assessment.framework_specific_analysis || {}).map(([key, value]) => `<li>${key}: ${value}</li>`).join('')}</ul>
             `;
         });
 
