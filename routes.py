@@ -14,13 +14,15 @@ logger = logging.getLogger(__name__)
 def init_routes(app, socketio):
     @app.route('/', methods=['GET'])
     def index():
-        return render_template('index.html', frameworks=UX_FRAMEWORKS)
+        return render_template('index.html')
 
-    @app.route('/results/<int:transcription_id>')
-    def results(transcription_id):
-        transcription = Transcription.query.get_or_404(transcription_id)
-        assessment = Assessment.query.filter_by(transcription_id=transcription_id).first()
-        return render_template('results.html', transcription=transcription, assessment=assessment)
+    @app.route('/assessment', methods=['GET'])
+    def landing():
+        return render_template('assessment.html', frameworks=UX_FRAMEWORKS)
+
+    @app.route('/features', methods=['GET'])
+    def login():
+        return render_template('features.html')
 
     @app.route('/fine-tune', methods=['POST'])
     def fine_tune():
@@ -28,17 +30,6 @@ def init_routes(app, socketio):
         model_name = fine_tune_model(dataset)
         flash(f"Model fine-tuned successfully. New model name: {model_name}", 'success')
         return redirect(url_for('index'))
-
-    @app.route('/dashboard')
-    def dashboard():
-        projects = Project.query.all()
-        return render_template('dashboard.html', projects=projects)
-
-    @app.route('/project/<int:project_id>')
-    def project_details(project_id):
-        project = Project.query.get_or_404(project_id)
-        transcriptions = Transcription.query.filter_by(project_id=project_id).all()
-        return render_template('project_details.html', project=project, transcriptions=transcriptions)
 
     @socketio.on('transcribe')
     def handle_transcription(data):

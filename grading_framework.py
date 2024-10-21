@@ -51,11 +51,15 @@ def grade_transcription(transcription: str, framework: str) -> dict:
     }}
     
     For the framework_specific_analysis, include relevant metrics or categories specific to the {framework_description} framework.
+    Quote specific lines from the transcript to provide supporting evidence for framework_specific_analysis and include the exact timestamp from the transcript at which each line can be found.
+    Do not paraphrase the lines you quote, they must match the transcript word for word.
     """
 
     try:
         logger.info(f"Sending request to OpenAI API for framework: {framework}")
         response = send_openai_request(prompt)
+        response = response[response.find('```json')+7:]
+        response = response[:response.find('```')]
         assessment = json.loads(response)
         logger.info("Successfully received and parsed OpenAI API response")
         
