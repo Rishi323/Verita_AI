@@ -51,8 +51,8 @@ def grade_transcription(transcription: str, framework: str) -> dict:
     }}
     
     For the framework_specific_analysis, include relevant metrics or categories specific to the {framework_description} framework.
-    Quote specific lines from the transcript to provide supporting evidence for framework_specific_analysis and include the timestamp at which the quote can be found in the transcript.
-    Do not paraphrase the lines you quote, they should match the transcript word for word.
+    Quote specific lines from the transcript to provide supporting evidence for framework_specific_analysis and include the exact timestamp from the transcript at which each line can be found.
+    Do not paraphrase the lines you quote, they must match the transcript word for word.
     """
 
     try:
