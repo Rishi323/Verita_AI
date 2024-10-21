@@ -16,6 +16,18 @@ def init_routes(app, socketio):
     def index():
         return render_template('index.html', frameworks=UX_FRAMEWORKS)
 
+    @app.route('/landing', methods=['GET'])
+    def landing():
+        return render_template('landing.html')
+
+    @app.route('/login', methods=['GET'])
+    def login():
+        return render_template('landing.html')
+
+    @app.route('/register', methods=['GET'])
+    def register():
+        return render_template('landing.html')
+
     @app.route('/results/<int:transcription_id>')
     def results(transcription_id):
         transcription = Transcription.query.get_or_404(transcription_id)
