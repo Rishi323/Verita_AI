@@ -26,7 +26,7 @@ def init_routes(app, socketio):
 
     @app.route('/register', methods=['GET'])
     def register():
-        return render_template('landing.html')
+        return render_template('register.html')
 
     @app.route('/results/<int:transcription_id>')
     def results(transcription_id):
