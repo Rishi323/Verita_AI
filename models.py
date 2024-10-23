@@ -11,8 +11,8 @@ class Project(db.Model):
 class Transcription(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.Text, nullable=False)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    project_id = db.Column(db.Integer, db.ForeignKey('project.id'), nullable=True)
     assessments = db.relationship('Assessment', backref='transcription', lazy=True)
 
 class Assessment(db.Model):
