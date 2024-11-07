@@ -140,3 +140,7 @@ def init_routes(app, socketio):
             logger.error(f"Error in get_insights: {str(e)}")
             logger.error(f"Traceback: {traceback.format_exc()}")
             return jsonify({'error': 'An error occurred while fetching insights'}), 500
+    @app.route('/dashboard')
+    def dashboard():
+        return render_template('index.html')
+ 
