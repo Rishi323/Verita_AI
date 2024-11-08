@@ -1,19 +1,19 @@
 'use client'
 
 import * as React from 'react'
-import { BarChart, Camera, FileVideo, Folder, Grid, Image as ImageIcon, Mic, Plus, Tag, Upload, Users, Globe, Layout, FileText, Play, PauseCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { BarChart, Camera, FileVideo, Folder, Grid, Image as ImageIcon, Mic, Plus } from 'lucide-react'
+import { Button } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/button.tsx'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/card.tsx'
+import { Input } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/input.tsx'
+import { Label } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/label.tsx'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/tabs.tsx'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/select.tsx'
 import {
   Table,
   TableBody,
@@ -21,27 +21,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table'
-import { Textarea } from '@/components/ui/textarea'
-import { Progress } from '@/components/ui/progress'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+} from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/table.tsx'
+import { Textarea } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/Textarea.tsx'
+import { Progress } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/progress.tsx'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/dialog.tsx'
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = React.useState('overview')
   const [isRecording, setIsRecording] = React.useState(false)
   const [recordingMode, setRecordingMode] = React.useState('screen-webcam')
-  const [recordingTime, setRecordingTime] = React.useState(0)
   const [aiInterviewInProgress, setAiInterviewInProgress] = React.useState(false)
 
   const startRecording = () => {
     setIsRecording(true)
-    setRecordingTime(0)
     // Implement actual recording logic here
-  }
-
-  const stopRecording = () => {
-    setIsRecording(false)
-    // Implement logic to save the recording
   }
 
   const startAiInterview = () => {
@@ -54,16 +47,6 @@ export default function Dashboard() {
     // Implement logic to save AI interview results
   }
 
-  React.useEffect(() => {
-    let interval;
-    if (isRecording) {
-      interval = setInterval(() => {
-        setRecordingTime((prevTime) => prevTime + 1)
-      }, 1000)
-    }
-    return () => clearInterval(interval)
-  }, [isRecording])
-
   return (
     <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
@@ -72,54 +55,48 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-gray-800">Research Platform</h1>
         </div>
         <nav className="mt-6">
-          <a
-            href="#"
-            className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          <button
+            className="flex w-full items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
             onClick={() => setActiveTab('overview')}
           >
             <Grid className="mr-3 h-6 w-6" />
             Overview
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          </button>
+          <button
+            className="flex w-full items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
             onClick={() => setActiveTab('studies')}
           >
             <Folder className="mr-3 h-6 w-6" />
             Studies
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          </button>
+          <button
+            className="flex w-full items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
             onClick={() => setActiveTab('stimuli')}
           >
             <ImageIcon className="mr-3 h-6 w-6" />
             Stimuli
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          </button>
+          <button
+            className="flex w-full items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
             onClick={() => setActiveTab('recordings')}
           >
             <FileVideo className="mr-3 h-6 w-6" />
             Recordings
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          </button>
+          <button
+            className="flex w-full items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
             onClick={() => setActiveTab('ai-interview')}
           >
             <Mic className="mr-3 h-6 w-6" />
             AI Interview
-          </a>
-          <a
-            href="#"
-            className="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+          </button>
+          <button
+            className="flex w-full items-center px-6 py-3 text-gray-600 hover:bg-gray-100 hover:text-gray-800"
             onClick={() => setActiveTab('analysis')}
           >
             <BarChart className="mr-3 h-6 w-6" />
             Analysis
-          </a>
+          </button>
         </nav>
       </div>
 
@@ -331,22 +308,6 @@ export default function Dashboard() {
                       <TableRow>
                         <TableCell>Product Demo Video</TableCell>
                         <TableCell>Video</TableCell>
-                        <TableCell>Product Feedback Study</TableCell>
-                        <TableCell>
-                          <Button variant="outline" size="sm">View</Button>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>New Feature Prototype</TableCell>
-                        <TableCell>Prototype</TableCell>
-                        <TableCell>User Behavior Study</TableCell>
-                        <TableCell>
-                          <Button variant="outline" size="sm">View</Button>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Marketing Campaign</TableCell>
-                        <TableCell>Ad Copy</TableCell>
                         <TableCell>Product Feedback Study</TableCell>
                         <TableCell>
                           <Button variant="outline" size="sm">View</Button>
