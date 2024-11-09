@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Verita</title>
+  <meta charset="UTF-8" />
+  <style>
+    #vapi-support-btn {
+      position: relative !important;
+      margin: 0 auto;
+      margin-top: 20px;
+      left: 0;
+    }
+    .vapi-btn {
+      position: relative !important;
+      align-self: center !important;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      width: fit-content;
+      margin: 100px;
+    }
+
+    .loading:after {
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: bottom;
+      -webkit-animation: ellipsis steps(4, end) 900ms infinite;
+      animation: ellipsis steps(4, end) 900ms infinite;
+      content: "\2026";
+      /* ascii code for the ellipsis character */
+      width: 0px;
+    }
+    
+    @keyframes ellipsis {
+      to {
+        width: 40px;
+      }
+    }
+    
+    @-webkit-keyframes ellipsis {
+      to {
+        width: 40px;
+      }
+    }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-indigo-100 font-sans">
+  <div class="pb-1 pt-1 px-4 bg-indigo-500">
+    <div class="pt-0 max-w-6xl mx-auto">
+      <h1 class="pt-2 text-8xl md:text-9xl font-bold text-center mb-8 text-indigo-100">Verita</h1>
+    </div>
+  </div>
+  <div class="w-full py-4">
+    <div class="flex justify-center">
+      <form id="dataForm" enctype="multipart/form-data" class="justify-self-center">
+        <div class="flex py-2 justify-center">
+          <label for="images" class="bg-indigo-500 hover:bg-indigo-700 p-4 rounded-md cursor-pointer justify-self-center">Choose Images</label>
+          <input type="file" name="images" id="images" multiple accept=".jpg,.jpeg,.png,.gif" hidden>
+        </div>
+        <div class="py-2">
+          <div class="flex justify-center">
+            <div class="columns-1">
+              <label for="additionalInfo" class="block w-full text-center">Image/Brand Info:</label>
+              <textarea rows="4" name="additionalInfo" class="ml-2 p-2 border border-indigo-300 rounded-md bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea><br /> 
+            </div>
+            <div class="columns-1">
+              <label for="additionalQuestions" class="block w-full text-center">Additional Questions:</label>
+              <textarea rows="4" name="additionalQuestions" class="ml-2 p-2 border border-indigo-300 rounded-md bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"></textarea>
+            </div>  
+          </div>
+        </div>
+        <div class="flex py-2 items-center justify-center w-full">
+          <button type="button" onclick="submitForm()" class="text-center bg-indigo-500 hover:bg-indigo-700 p-4 rounded-md cursor-pointer">Submit</button>
+        </div>
+        <div id="loadingIndicator" class="loading-indicator loading text-xl text-center" style="display:none">Processing (this may take up to 20 seconds)</div>
+      </form>
+    </div>
+  </div>
+  <div class="w-full py-4">
+    <div class="flex justify-self-center justify-center w-3/4 bg-indigo-200">
+      <div id="image-preview" class="flex justify-center w-full"></div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('images').addEventListener('change', async function(event) {
+      const files = Array.from(event.target.files);
+      const previewContainer = document.getElementById('image-preview');
+      previewContainer.innerHTML = ''; // Clear previous images
+  
+      // Convert each file to a Promise that resolves with the file's data URL
+      const filePromises = files.map((file, index) => {
+        return new Promise((resolve, reject) => {
+          if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              resolve({ src: e.target.result, index: index + 1 }); // Resolve with src and index
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          } else {
+            resolve(null); // Resolve with null if not an image
+          }
+        });
+      });
+  
+      // Wait for all files to load
+      const images = await Promise.all(filePromises);
+  
+      // Display images in the correct order
+      images.forEach(image => {
+        if (image) {
+          const container = document.createElement('div');
+          container.style.display = 'inline-block';
+          container.style.textAlign = 'center';
+          container.style.margin = '10px';
+  
+          const label = document.createElement('p');
+          label.innerText = `Image ${image.index}`;
+          
+          const img = document.createElement('img');
+          img.src = image.src;
+          img.style.width = '300px';
+  
+          container.appendChild(label);
+          container.appendChild(img);
+          previewContainer.appendChild(container);
+        }
+      });
+    });
+  </script>
+  <script>
+    const assistant = "3a00e93d-5ce5-4046-98c1-8f845ae1f0b4"; // Replace with your assistant ID
+    const apiKey = "71d6d017-20a2-49b9-b972-7a81bd3adef4"; // Replace with your API key
+
+    async function submitForm() {
+      const form = document.getElementById('dataForm');
+      const formData = new FormData(form);
+      const loadingIndicator = document.getElementById('loadingIndicator');
+      
+      // Show loading indicator
+      loadingIndicator.style.display = 'block';
+
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          body: formData,
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.response) {
+          activateVapi(data.response);
+        } else {
+          console.error('Error in form submission:', data.error || 'Unknown error');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        // Hide loading indicator after the response
+        loadingIndicator.style.display = 'none';
+      }
+    }
+
+    function activateVapi(assistantOverrides) {
+      const buttonConfig = {
+        position: "bottom",
+        offset: "10px",
+        width: "200px",
+        height: "50px",
+        zIndex: 2147483647,
+        idle: {
+          color: `#4f46e5`,
+          type: "pill",
+          icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone.svg`,
+          title: "Interview with our AI assistant!",
+          subtitle: "",
+        },
+        loading: {
+          color: `#a5b4fc)`,
+          type: "pill",
+          icon: `https://unpkg.com/lucide-static@0.321.0/icons/loader-2.svg`,
+        },
+        active: {
+          color: `#a78bfa`,
+          type: "pill",
+          icon: `https://unpkg.com/lucide-static@0.321.0/icons/phone-off.svg`,
+        },
+      };
+
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@1.1.6/dist/assets/index.js";
+      script.defer = true;
+      script.async = true;
+
+      script.onload = () => {
+        const vapi = window.vapiSDK.run({
+          apiKey: apiKey,
+          assistant: assistant,
+          assistantOverrides: assistantOverrides,
+          config: buttonConfig,
+        });
+
+        if (vapi) {
+          console.log("VAPI assistant activated");
+        }
+      };
+
+      document.head.appendChild(script);
+    }
+  </script>
+
+</body>
+
+</html>
