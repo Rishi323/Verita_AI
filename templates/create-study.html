@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verita AI - Create New Study</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+</head>
+<body class="bg-white">
+    <!-- Reuse your existing header -->
+    <header class="bg-blue-500 p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center">
+                <!-- Your existing logo SVG -->
+            </div>
+            <div class="space-x-4">
+                <a href="/" class="text-white">Home</a>
+                <a href="/features" class="text-white">Features</a>
+                <a href="#" class="text-white">Pricing</a>
+                <a href="#" class="text-white">Resources</a>
+                <a href="#" class="bg-white text-blue-500 px-4 py-2 rounded-full font-semibold">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto py-12">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold">Create New Study</h1>
+                <p class="text-gray-600">Set up your research study with AI assistance</p>
+            </div>
+            <button class="bg-blue-500 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-600 transition duration-300">
+                Save Draft
+            </button>
+        </div>
+
+        <div class="mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="flex space-x-8">
+                    <button class="px-4 py-2 border-b-2 border-blue-500 text-blue-500">Logistics</button>
+                    <button class="px-4 py-2 border-b-2 border-transparent hover:border-gray-300">Discussion Guide</button>
+                    <button class="px-4 py-2 border-b-2 border-transparent hover:border-gray-300">Edit Guide</button>
+                    <button class="px-4 py-2 border-b-2 border-transparent hover:border-gray-300">Stimuli</button>
+                    <button class="px-4 py-2 border-b-2 border-transparent hover:border-gray-300">AI Interview</button>
+                </nav>
+            </div>
+
+            <div class="mt-8">
+                <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
+                    <h2 class="text-xl font-bold mb-4">Study Participants</h2>
+                    <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Users to Screen</label>
+                            <input type="number" class="w-full px-4 py-2 border border-gray-300 rounded-md" placeholder="E.g., 100">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Users to Interview</label>
+                            <input type="number" class="w-full px-4 py-2 border border-gray-300 rounded-md" placeholder="E.g., 10">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">User Source</label>
+                        <div class="space-y-2">
+                            <label class="flex items-center">
+                                <input type="radio" name="user-source" value="company" class="mr-2">
+                                Company Upload
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="user-source" value="verita" class="mr-2" checked>
+                                Verita's Database
+                            </label>
+                            <label class="flex items-center">
+                                <input type="radio" name="user-source" value="blend" class="mr-2">
+                                Blend of Both
+                            </label>
+                        </div>
+                    </div>
+
+                    <button class="flex items-center px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50">
+                        <i data-lucide="upload" class="w-5 h-5 mr-2"></i>
+                        Upload User List
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Copy your existing footer -->
+    <footer class="bg-blue-500 text-white py-12">
+        <!-- Copy footer from assessment.html -->
+        <!-- Reference lines 113-163 from templates/assessment.html -->
+    </footer>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html> 
