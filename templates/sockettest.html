@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Real-Time Voice Chat</title>
+</head>
+<body>
+  <h1>Real-Time Voice Chat</h1>
+  <button id="start-conversation">Start Conversation</button>
+  <button id="stop-conversation">Stop Conversation</button>
+  <div id="conversation-output"></div>
+  <div id="audio-container"></div>
+  <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  <script>
+    const socket = io();
+    let mediaRecorder;
+    let audioContext;
+    let audioQueue = [];
+    let isPlaying = false;
+    const conversationOutput = document.getElementById('conversation-output');
+
+    // Initialize AudioContext
+    function initAudioContext() {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)({
+        sampleRate: 44100
+      });
+    }
+
+    // Start Conversation Button
+    document.getElementById('start-conversation').addEventListener('click', async () => {
+      if (!audioContext) {
+        initAudioContext();
+      }
+      socket.emit('start_conversation');
+      await startRecording();
+      conversationOutput.innerHTML = '';
+    });
+
+    // Stop Conversation Button
+    document.getElementById('stop-conversation').addEventListener('click', () => {
+      socket.emit('end_audio_input');
+      stopRecording();
+    });
+
+    // Start recording audio
+    async function startRecording() {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorder = new MediaRecorder(stream);
+      
+      mediaRecorder.ondataavailable = async (event) => {
+        if (event.data.size > 0) {
+          const arrayBuffer = await event.data.arrayBuffer();
+          const audioContext = new AudioContext();
+          
+          try {
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            const pcmData = convertToPCM16(audioBuffer);
+            socket.emit('user_audio_chunk', { 
+              audioChunk: arrayBuffer, 
+              sampleRate: 44100 
+            });
+          } catch (error) {
+            console.error('Error decoding audio data:', error);
+          }
+        }
+      };
+
+      mediaRecorder.start(100);
+    }
+
+    // Convert AudioBuffer to 16-bit PCM
+    function convertToPCM16(audioBuffer) {
+      const samples = audioBuffer.getChannelData(0);
+      const pcmData = new Int16Array(samples.length);
+      
+      for (let i = 0; i < samples.length; i++) {
+        const s = Math.max(-1, Math.min(1, samples[i]));
+        pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+      }
+      
+      return pcmData;
+    }
+
+    // Stop recording audio
+    function stopRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+      }
+    }
+
+    // Handle incoming audio chunks
+    socket.on('audio_chunk', async (data) => {
+      try {
+        // Create an AudioBuffer from the received data
+        const audioBuffer = await createAudioBuffer(data.chunk);
+        if (audioBuffer) {
+          playAudioBuffer(audioBuffer);
+        }
+      } catch (error) {
+        console.error('Error processing audio chunk:', error);
+      }
+    });
+
+    // Create AudioBuffer from received data
+    async function createAudioBuffer(chunk) {
+      const float32Array = new Float32Array(chunk);
+      const audioBuffer = audioContext.createBuffer(1, float32Array.length, 44100);
+      audioBuffer.getChannelData(0).set(float32Array);
+      return audioBuffer;
+    }
+
+    // Play audio buffer
+    function playAudioBuffer(audioBuffer) {
+      const source = audioContext.createBufferSource();
+      source.buffer = audioBuffer;
+      source.connect(audioContext.destination);
+      source.start();
+    }
+
+    let currentTranscript = '';
+    const transcriptDisplay = document.createElement('div');
+    transcriptDisplay.id = 'transcript-display';
+    document.getElementById('conversation-output').appendChild(transcriptDisplay);
+
+    // Handle incremental transcript updates
+    socket.on('transcript_delta', (data) => {
+      if (data.text) {
+        currentTranscript += data.text;
+        updateTranscriptDisplay();
+      }
+    });
+
+    // Handle complete responses
+    socket.on('response_complete', (data) => {
+      if (data.text) {
+        addToConversation('Assistant', data.text);
+      }
+      currentTranscript = '';
+      updateTranscriptDisplay();
+    });
+
+    // Update the transcript display
+    function updateTranscriptDisplay() {
+      transcriptDisplay.innerHTML = `
+        <div class="transcript">
+          <strong>Current Transcript:</strong> ${currentTranscript}
+        </div>
+      `;
+    }
+
+    // Add message to conversation display
+    function addToConversation(role, content) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${role.toLowerCase()}`;
+      messageDiv.innerHTML = `<strong>${role}:</strong> ${content}`;
+      conversationOutput.appendChild(messageDiv);
+      conversationOutput.scrollTop = conversationOutput.scrollHeight;
+    }
+
+    // Handle server events
+    socket.on('server_event', (eventData) => {
+      console.log('Received server event:', eventData);
+      
+      if (eventData.transcript) {
+        currentTranscript = eventData.transcript;
+        updateTranscriptDisplay();
+      }
+    });
+
+    // Error handling
+    socket.on('connect_error', (error) => {
+      console.error('Connection error:', error);
+      addToConversation('System', 'Connection error: ' + error.message);
+    });
+
+    socket.on('error', (error) => {
+      console.error('Socket error:', error);
+      addToConversation('System', 'Error: ' + error.message);
+    });
+  </script>
+  <style>
+    #conversation-output {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px 0;
+    }
+    .message {
+      margin: 5px 0;
+      padding: 5px;
+    }
+    .assistant {
+      background-color: #f0f0f0;
+    }
+    .system {
+      color: #ff0000;
+    }
+    .transcript {
+      background-color: #f8f9fa;
+      padding: 10px;
+      margin: 5px 0;
+      border-left: 3px solid #007bff;
+      font-style: italic;
+    }
+  </style>
+</body>
+</html>

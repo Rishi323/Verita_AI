@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Voice Chat (Native WebSocket)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .status {
+            padding: 0.5rem;
+            border-radius: 4px;
+            background: #f0f0f0;
+        }
+        .transcript {
+            min-height: 200px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            overflow-y: auto;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            background: #0070f3;
+            color: white;
+            cursor: pointer;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .message {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-radius: 4px;
+        }
+        .user {
+            background: #e3f2fd;
+            margin-left: 2rem;
+        }
+        .assistant {
+            background: #f5f5f5;
+            margin-right: 2rem;
+        }
+        #apiKeyInput {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            width: 100%;
+        }
+        /* ... previous styles remain the same ... */
+        .error {
+            color: red;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real-time Voice Chat (Native WebSocket)</h1>
+        <div id="errorMessage" class="error"></div>
+        <input type="password" id="apiKeyInput" placeholder="Enter your OpenAI API key" />
+        <div class="controls">
+            <button id="connectBtn">Connect</button>
+            <button id="startBtn" disabled>Start Recording</button>
+            <button id="stopBtn" disabled>Stop Recording</button>
+            <div class="status" id="status">Not connected</div>
+        </div>
+        <div class="transcript" id="transcript"></div>
+    </div>
+
+    <script>
+        // First, verify WebSocket support
+        if (!window.WebSocket) {
+            document.getElementById('errorMessage').textContent = 
+                'Your browser does not support native WebSockets. Please use a modern browser.';
+            throw new Error('WebSocket not supported');
+        }
+
+        let ws;
+        let mediaRecorder;
+        let audioContext;
+        let isRecording = false;
+
+        const connectBtn = document.getElementById('connectBtn');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const status = document.getElementById('status');
+        const transcript = document.getElementById('transcript');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const errorMessage = document.getElementById('errorMessage');
+
+        function appendMessage(text, role) {
+            const div = document.createElement('div');
+            div.className = `message ${role}`;
+            div.textContent = text;
+            transcript.appendChild(div);
+            transcript.scrollTop = transcript.scrollHeight;
+        }
+
+        async function initWebSocket() {
+            errorMessage.textContent = ''; // Clear any previous errors
+            
+            if (ws) {
+                ws.close();
+            }
+
+            const API_KEY = apiKeyInput.value.trim();
+            if (!API_KEY) {
+                errorMessage.textContent = 'Please enter an API key';
+                return;
+            }
+
+            const url = `wss://api.openai.com/v1/realtime?model=gpt-4o-realtime-preview-2024-10-01`;
+            
+            try {
+                console.log('Creating native WebSocket connection...');
+                ws = new WebSocket(url, {
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'OpenAI-Beta': 'realtime=v1'
+                    }
+                });
+
+                ws.addEventListener('error', (error) => {
+                    console.error('WebSocket error:', error);
+                    errorMessage.textContent = 'Connection error: ' + error.message;
+                    status.textContent = 'Connection failed';
+                });
+
+                ws.onopen = () => {
+                    console.log('WebSocket connected successfully');
+                    status.textContent = 'Connected';
+                    startBtn.disabled = false;
+                    connectBtn.disabled = true;
+
+                    // Initialize session with default configuration
+                    ws.send(JSON.stringify({
+                        type: 'session.update',
+                        session: {
+                            input_audio_transcription: true,
+                            turn_detection: 'server_vad'
+                        }
+                    }));
+                };
+
+                ws.onclose = (event) => {
+                    console.log('WebSocket closed:', event.code, event.reason);
+                    status.textContent = 'Disconnected';
+                    startBtn.disabled = true;
+                    stopBtn.disabled = true;
+                    connectBtn.disabled = false;
+                };
+
+                ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    console.log('Received message:', data);
+                    
+                    if (data.type === 'text.created') {
+                        appendMessage(data.text, 'assistant');
+                    } else if (data.type === 'conversation.item.created' && 
+                             data.item.role === 'user' && 
+                             data.item.content[0].type === 'input_text') {
+                        appendMessage(data.item.content[0].text, 'user');
+                    }
+                };
+
+            } catch (error) {
+                console.error('Failed to create WebSocket:', error);
+                errorMessage.textContent = 'Failed to create WebSocket connection: ' + error.message;
+            }
+        }
+
+        // ... rest of the code (startRecording and stopRecording functions) remains the same ...
+        async function startRecording() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new AudioContext({sampleRate: 24000}); // Set sample rate to 24kHz
+                const source = audioContext.createMediaStreamSource(stream);
+                const processor = audioContext.createScriptProcessor(4096, 1, 1);
+
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+
+                processor.onaudioprocess = (e) => {
+                    if (!isRecording) return;
+                    
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    const audioData = new Float32Array(inputData);
+                    
+                    // Convert to 16-bit PCM
+                    const pcmData = new Int16Array(audioData.length);
+                    for (let i = 0; i < audioData.length; i++) {
+                        const s = Math.max(-1, Math.min(1, audioData[i]));
+                        pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+                    }
+
+                    // Send audio buffer
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({
+                            type: 'input_audio_buffer.append',
+                            audio: btoa(String.fromCharCode.apply(null, new Uint8Array(pcmData.buffer)))
+                        }));
+                    }
+                };
+
+                isRecording = true;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                status.textContent = 'Recording...';
+
+            } catch (err) {
+                console.error('Error starting recording:', err);
+                status.textContent = 'Error starting recording';
+            }
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            status.textContent = 'Connected';
+
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'input_audio_buffer.commit'
+                }));
+            }
+
+            if (audioContext) {
+                audioContext.close();
+            }
+        }
+
+        // Event Listeners
+        connectBtn.addEventListener('click', initWebSocket);
+        startBtn.addEventListener('click', startRecording);
+        stopBtn.addEventListener('click', stopRecording);
+
+        console.log('Page loaded with native WebSocket implementation');
+    </script>
+</body>
+</html>
