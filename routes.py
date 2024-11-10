@@ -97,9 +97,15 @@ def init_routes(app, socketio):
     @app.route('/features', methods=['GET'])
     def login():
         return render_template('features.html')
+    
     @app.route('/automated-transcription')
     def automated_transcription():
         return render_template('automated-transcription.html')
+    
+    @app.route('/create-study', methods=['GET'])
+    def create_study():
+        return render_template('create-study.html')
+    
     @app.route('/fine-tune', methods=['POST'])
     def fine_tune():
         dataset = prepare_dataset()
