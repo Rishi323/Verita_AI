@@ -1,4 +1,7 @@
+"use client"
+
 import * as React from "react"
+import { Brain, Calendar, DollarSign, Edit, Globe, GripVertical, Mail, MessageSquare, Mic, Plus, Star, Trash2, Upload, Users, Play } from "lucide-react"
 import { Button } from "/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/button.tsx"
 import { Card, CardContent, CardHeader, CardTitle } from "/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/card.tsx"
 import { Input } from "/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/input.tsx"
@@ -10,43 +13,8 @@ import { Slider } from "/Users/aryanmishra/Verita_AI/dashboard/src/components/ui
 import { Switch } from "/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/switch.tsx"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/command.tsx"
 import { Popover, PopoverContent, PopoverTrigger } from "/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/Popover.tsx"
-import {
-  Brain,
-  Calendar,
-  DollarSign,
-  Edit,
-  Globe,
-  GripVertical,
-  Mail,
-  MessageSquare,
-  Mic,
-  Plus,
-  Star,
-  Trash2,
-  Upload,
-  Users,
-  Play,
-} from "lucide-react"
-
-interface Question {
-  id: number
-  text: string
-  important: boolean
-  topic: string
-}
-
-interface ScreenerQuestion {
-  id: number
-  text: string
-}
-
-interface User {
-  id: number
-  name: string
-  age: number
-  gender: string
-  income: string
-}
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/table.tsx"
+import type { CreateStudyProps, Question, ScreenerQuestion, User } from "/Users/aryanmishra/Verita_AI/dashboard/src/research.ts"
 
 interface AIPromptInputProps {
   placeholder: string
@@ -65,10 +33,7 @@ const AIPromptInput: React.FC<AIPromptInputProps> = ({ placeholder, suggestions 
           <CommandEmpty>No suggestions found.</CommandEmpty>
           <CommandGroup>
             {suggestions.map((suggestion, index) => (
-              <CommandItem
-                key={index}
-                onSelect={() => console.log(suggestion)}
-              >
+              <CommandItem key={index} onSelect={() => console.log(suggestion)}>
                 {suggestion}
               </CommandItem>
             ))}
@@ -79,7 +44,7 @@ const AIPromptInput: React.FC<AIPromptInputProps> = ({ placeholder, suggestions 
   </Popover>
 )
 
-export default function CreateStudy() {
+export function CreateStudy({ onClose }: CreateStudyProps) {
   const [questions, setQuestions] = React.useState<Question[]>([
     { id: 1, text: "What's your experience with our product?", important: false, topic: "Product Experience" },
     { id: 2, text: "How often do you use similar products?", important: true, topic: "Usage Patterns" },
@@ -128,7 +93,7 @@ export default function CreateStudy() {
   }, {} as Record<string, Question[]>)
 
   return (
-    <div className="flex flex-col gap-6 p-6">
+    <div className="flex flex-col gap-6 p-6 bg-white rounded-lg shadow-lg max-w-4xl mx-auto overflow-y-auto max-h-[90vh]">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Create New Study</h1>
@@ -136,7 +101,7 @@ export default function CreateStudy() {
             Set up your research study with AI assistance
           </p>
         </div>
-        <Button>Save Draft</Button>
+        <Button onClick={onClose}>Close</Button>
       </div>
 
       <Tabs defaultValue="guide" className="w-full">
@@ -315,212 +280,120 @@ export default function CreateStudy() {
                 <div className="space-y-2">
                   <Label htmlFor="race">Race/Ethnicity</Label>
                   <AIPromptInput
-                    placeholder="E.g., All"
-                    suggestions={["All", "Specific ethnic groups", "Diverse mix"]}
+                    placeholder="E.g., Diverse mix"
+                    suggestions={["Caucasian", "African American", "Hispanic", "Asian", "Mixed"]}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="income">Income Range</Label>
+                  <Label htmlFor="income">Income Level</Label>
                   <AIPromptInput
-                    placeholder="E.g., $50,000-$100,000"
-                    suggestions={["Under $50,000", "$50,000-$100,000", "Over $100,000"]}
+                    placeholder="E.g., Middle income"
+                    suggestions={["Low income", "Middle income", "High income", "Mixed"]}
                   />
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Switch id="in-person" />
-                <Label htmlFor="in-person">In-person interviews</Label>
-              </div>
-              <div className="space-y-2">
-                <Label>Demographic Statistics</Label>
-                <div className="grid grid-cols-3 gap-4">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Age Distribution</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">50/50</div>
-                      <p className="text-xs text-muted-foreground">25-34 / 35-44</p>
-                      <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: '50%' }}></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Gender Ratio</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">1:1</div>
-                      <p className="text-xs text-muted-foreground">Male / Female</p>
-                      <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: '50%' }}></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Income Level</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">50/50</div>
-                      <p className="text-xs text-muted-foreground">Medium / High</p>
-                      <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: '50%' }}></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
-                Compensation
-              </CardTitle>
+              <CardTitle>Screener Questions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Input id="compensation" type="number" placeholder="Amount" />
-                <Select>
-                  <SelectTrigger id="compensation-type" className="w-[180px]">
-                    <SelectValue placeholder="Type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cash">Cash</SelectItem>
-                    <SelectItem value="gift-card">Gift Card</SelectItem>
-                    <SelectItem value="product">Product</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
-                Email Template
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Textarea
-                placeholder="Enter your email template for participants here..."
-                className="min-h-[200px]"
-              />
-              <div className="flex space-x-2">
-                <Button variant="outline">
-                  <Mail className="mr-2 h-4 w-4" />
-                  Send via Outlook
-                </Button>
-                <Button variant="outline">
-                  <Mail className="mr-2 h-4 w-4" />
-                  Send via Gmail
-                </Button>
-                <Button variant="outline">
-                  <Mail className="mr-2 h-4 w-4" />
-                  Send via Yahoo
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Screener</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="screener-duration">Screener Call Duration (minutes)</Label>
-                <Input id="screener-duration" type="number" defaultValue={15} />
-              </div>
-              <div className="space-y-2">
-                <Label>Screener Questions</Label>
-                {screenerQuestions.map((question, index) => (
+              {screenerQuestions.map((question, index) => (
+                <div key={question.id} className="flex items-center space-x-2">
                   <Input
-                    key={question.id}
                     value={question.text}
                     onChange={(e) => {
                       const newQuestions = [...screenerQuestions]
                       newQuestions[index].text = e.target.value
                       setScreenerQuestions(newQuestions)
                     }}
+                    className="flex-grow"
                   />
-                ))}
-                <Button
-                  onClick={() => setScreenerQuestions([...screenerQuestions, { id: Date.now(), text: "" }])}
-                  variant="outline"
-                >
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Screener Question
-                </Button>
-              </div>
-              <div className="space-y-2">
-                <Label>Screened Users</Label>
-                <div className="border rounded-md p-2 space-y-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setScreenerQuestions(screenerQuestions.filter((_, i) => i !== index))
+                    }}
+                  >
+                    <Trash2 className="h-5 w-5 text-muted-foreground" />
+                  </Button>
+                </div>
+              ))}
+              <Button onClick={() => setScreenerQuestions([...screenerQuestions, { id: Date.now(), text: "" }])}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Screener Question
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Screened Users</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Age</TableHead>
+                    <TableHead>Gender</TableHead>
+                    <TableHead>Income</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {screenedUsers.map((user) => (
-                    <div key={user.id} className="flex justify-between items-center">
-                      <span>{user.name} - {user.age} years old, {user.gender}, {user.income} income</span>
-                      <Button variant="ghost" size="sm">Select</Button>
-                    </div>
+                    <TableRow key={user.id}>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.age}</TableCell>
+                      <TableCell>{user.gender}</TableCell>
+                      <TableCell>{user.income}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm">
+                          View
+                        </Button>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Final Users for Interview</Label>
-                <div className="border rounded-md p-2 space-y-2">
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Final Participants</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Age</TableHead>
+                    <TableHead>Gender</TableHead>
+                    <TableHead>Income</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {finalUsers.map((user) => (
-                    <div key={user.id} className="flex justify-between items-center">
-                      <span>{user.name} - {user.age} years old, {user.gender}, {user.income} income</span>
-                      <Button variant="ghost" size="sm">Remove</Button>
-                    </div>
+                    <TableRow key={user.id}>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.age}</TableCell>
+                      <TableCell>{user.gender}</TableCell>
+                      <TableCell>{user.income}</TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="sm">
+                          Remove
+                        </Button>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label>Demographic Statistics</Label>
-                <div className="grid grid-cols-3 gap-4">
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Age Distribution</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">50/50</div>
-                      <p className="text-xs text-muted-foreground">25-34 / 35-44</p>
-                      <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: '50%' }}></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Gender Ratio</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">1:1</div>
-                      <p className="text-xs text-muted-foreground">Male / Female</p>
-                      <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: '50%' }}></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-medium">Income Level</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">50/50</div>
-                      <p className="text-xs text-muted-foreground">Medium / High</p>
-                      <div className="mt-4 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-primary" style={{ width: '50%' }}></div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>
@@ -528,23 +401,87 @@ export default function CreateStudy() {
         <TabsContent value="stimuli" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Upload className="h-5 w-5" />
-                Upload Stimuli
-              </CardTitle>
+              <CardTitle>Upload Stimuli</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-center border-2 border-dashed rounded-lg p-12">
-                <div className="text-center">
-                  <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Drag and drop or click to upload designs, prototypes, or other materials
-                  </p>
-                  <Button variant="secondary" className="mt-4">
-                    Upload Files
-                  </Button>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="stimulus-type">Stimulus Type</Label>
+                  <Select>
+                    <SelectTrigger id="stimulus-type">
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="image">Image</SelectItem>
+                      <SelectItem value="video">Video</SelectItem>
+                      <SelectItem value="audio">Audio</SelectItem>
+                      <SelectItem value="document">Document</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="stimulus-name">Stimulus Name</Label>
+                  <Input id="stimulus-name" placeholder="Enter name" />
                 </div>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="stimulus-description">Description</Label>
+                <Textarea id="stimulus-description" placeholder="Enter description" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="stimulus-file">Upload File</Label>
+                <Input id="stimulus-file" type="file" />
+              </div>
+              <Button className="w-full">
+                <Upload className="mr-2 h-4 w-4" />
+                Upload Stimulus
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Uploaded Stimuli</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell>Homepage Mockup</TableCell>
+                    <TableCell>Image</TableCell>
+                    <TableCell>New homepage design for user feedback</TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="sm">
+                        View
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell>Product Demo</TableCell>
+                    <TableCell>Video</TableCell>
+                    <TableCell>Demonstration of new features</TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="sm">
+                        View
+                      </Button>
+                      <Button variant="ghost" size="sm">
+                        Delete
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
             </CardContent>
           </Card>
         </TabsContent>
@@ -552,35 +489,78 @@ export default function CreateStudy() {
         <TabsContent value="ai-interview" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Mic className="h-5 w-5" />
-                AI Interview Demo
-              </CardTitle>
+              <CardTitle>AI Interview Setup</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="ai-persona">AI Interviewer Persona</Label>
+                <Select>
+                  <SelectTrigger id="ai-persona">
+                    <SelectValue placeholder="Select persona" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="friendly">Friendly and Approachable</SelectItem>
+                    <SelectItem value="professional">Professional and Formal</SelectItem>
+                    <SelectItem value="casual">Casual and Relaxed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="interview-style">Interview Style</Label>
+                <Select>
+                  <SelectTrigger id="interview-style">
+                    <SelectValue placeholder="Select style" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="structured">Structured</SelectItem>
+                    <SelectItem value="semi-structured">Semi-structured</SelectItem>
+                    <SelectItem value="unstructured">Unstructured</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="follow-up">Follow-up Question Depth</Label>
+                <Slider
+                  id="follow-up"
+                  min={1}
+                  max={5}
+                  step={1}
+                  defaultValue={[3]}
+                  className="w-full"
+                />
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch id="transcription" />
+                <Label htmlFor="transcription">Enable Real-time Transcription</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch id="sentiment-analysis" />
+                <Label htmlFor="sentiment-analysis">Enable Sentiment Analysis</Label>
+              </div>
+              <Button className="w-full">
+                <Play className="mr-2 h-4 w-4" />
+                Start AI Interview
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>AI Interview Results</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  This demo simulates how the AI voice chatbot will conduct the interview using the generated questions.
-                </p>
-                <div className="border rounded-lg p-4 space-y-2">
-                  <p className="font-semibold">AI: Hello, thank you for participating in our study. Let's begin with the first question.</p>
-                  {questions.map((question, index) => (
-                    <div key={index} className="pl-4 border-l-2 border-gray-200">
-                      <p className="font-semibold">AI: {question.text}</p>
-                      <p className="text-sm text-muted-foreground italic">User response will be recorded here...</p>
-                    </div>
-                  ))}
-                  <p className="font-semibold">AI: Thank you for your time and insights. Do you have any questions for me?</p>
-                </div>
-                <Button className="w-full">
-                  <Play className="mr-2 h-4 w-4" />
-                  Start AI Interview Demo
-                </Button>
-              </div>
+              <p className="text-sm text-muted-foreground">
+                AI interview results will be displayed here after conducting interviews.
+              </p>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
+
+      <div className="flex justify-end space-x-4">
+        <Button variant="outline" onClick={onClose}>Cancel</Button>
+        <Button>Create Study</Button>
+      </div>
     </div>
   )
 }

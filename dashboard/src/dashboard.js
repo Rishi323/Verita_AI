@@ -1,19 +1,19 @@
-'use client'
+"use client"
 
 import * as React from 'react'
 import { BarChart, Camera, FileVideo, Folder, Grid, Image as ImageIcon, Mic, Plus } from 'lucide-react'
-import { Button } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/button.tsx'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/card.tsx'
-import { Input } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/input.tsx'
-import { Label } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/label.tsx'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/tabs.tsx'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/select.tsx'
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -21,16 +21,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/table.tsx'
-import { Textarea } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/Textarea.tsx'
-import { Progress } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/progress.tsx'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '/Users/aryanmishra/Verita_AI/dashboard/src/components/ui/dialog.tsx'
+} from '@/components/ui/table'
+import { Textarea } from '@/components/ui/textarea'
+import { Progress } from '@/components/ui/progress'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { CreateStudy } from '@/components/research/create-study'
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = React.useState('overview')
   const [isRecording, setIsRecording] = React.useState(false)
   const [recordingMode, setRecordingMode] = React.useState('screen-webcam')
   const [aiInterviewInProgress, setAiInterviewInProgress] = React.useState(false)
+  const [isCreateStudyOpen, setIsCreateStudyOpen] = React.useState(false)
 
   const startRecording = () => {
     setIsRecording(true)
@@ -146,39 +148,10 @@ export default function Dashboard() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button>
-                  <Plus className="mr-2 h-4 w-4" />
-                  New Study
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Create New Study</DialogTitle>
-                  <DialogDescription>
-                    Enter the details for your new research study.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="study-title" className="text-right">
-                      Title
-                    </Label>
-                    <Input id="study-title" className="col-span-3" />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="study-description" className="text-right">
-                      Description
-                    </Label>
-                    <Textarea id="study-description" className="col-span-3" />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button type="submit">Create Study</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+            <Button onClick={() => setIsCreateStudyOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              New Study
+            </Button>
           </div>
         </header>
 
@@ -273,7 +246,7 @@ export default function Dashboard() {
                   </Table>
                 </CardContent>
                 <CardFooter>
-                  <Button>
+                  <Button onClick={() => setIsCreateStudyOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" />
                     New Study
                   </Button>
@@ -452,6 +425,12 @@ export default function Dashboard() {
           </Tabs>
         </main>
       </div>
+
+      {isCreateStudyOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <CreateStudy onClose={() => setIsCreateStudyOpen(false)} />
+        </div>
+      )}
     </div>
   )
 }
