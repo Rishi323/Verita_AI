@@ -154,7 +154,7 @@
         const data = await response.json();
 
         if (response.ok && data.response) {
-          activateVapi(data.response);
+          reactivateVapi(data.response);
         } else {
           console.error('Error in form submission:', data.error || 'Unknown error');
         }
@@ -164,6 +164,21 @@
         // Hide loading indicator after the response
         loadingIndicator.style.display = 'none';
       }
+    }
+
+    function reactivateVapi(overrides) {
+      // delete all existing VAPI elements
+      const vapiScript = document.getElementById("vapi-script");
+      if (vapiScript) {
+        vapiScript.remove();
+      }
+
+      const vapiBtn = document.getElementById("vapi-support-btn");
+      if (vapiBtn) {
+        vapiBtn.remove();
+      }
+
+      activateVapi(overrides);
     }
 
     function activateVapi(assistantOverrides) {
@@ -194,6 +209,7 @@
 
       const script = document.createElement("script");
       script.src = "https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@1.1.6/dist/assets/index.js";
+      script.id = "vapi-script";
       script.defer = true;
       script.async = true;
 
