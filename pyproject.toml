@@ -13,4 +13,5 @@ dependencies = [
     "flask-socketio>=5.4.1",
     "eventlet",
     "flask-migrate>=4.0.7",
+    "python-dotenv==1.0.1",
 ]
