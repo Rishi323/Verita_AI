@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources - Verita AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#4869E9',
+                        'primary-hover': '#3d5bd8',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <header class="bg-[#4869E9] shadow-lg">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <a href="/" class="flex items-center space-x-2">
+                    <svg width="37" height="30" viewBox="0 0 37 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-8">
+                        <path d="M0 2.86525V9.6182C0 11.6749 2.50611 12.7719 4.03763 11.3322L11.3471 4.5792C12.9483 3.1052 11.904 0.5 9.71119 0.5H2.40169C1.07902 0.5 0 1.56265 0 2.86525Z" fill="white"/>
+                        <path d="M34.5983 0.5H27.2888C25.1308 0.5 24.0517 3.1052 25.6529 4.5792L32.9624 11.3322C34.4939 12.7376 37 11.6749 37 9.6182V2.86525C37 1.56265 35.921 0.5 34.5983 0.5Z" fill="white"/>
+                        <path d="M20.1533 15.3002L32.9624 27.1608C34.4939 28.5662 37 27.5035 37 25.4468V18.6253C37 17.974 36.7215 17.357 36.2342 16.9113L20.1533 2C19.2135 1.14303 17.7865 1.14303 16.8467 2L0.765757 16.9113C0.278457 17.357 0 17.974 0 18.6253V25.4468C0 27.5035 2.50611 28.6005 4.03763 27.1608L16.8467 15.3002C17.7865 14.4433 19.2135 14.4433 20.1533 15.3002Z" fill="white"/>
+                    </svg>
+                    <span class="text-white text-xl font-bold">Verita AI</span>
+                </a>
+            </div>
+            
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="/" class="text-white hover:text-gray-200 transition">Home</a>
+                <a href="/features" class="text-white hover:text-gray-200 transition">Features</a>
+                <a href="/create-study" class="text-white hover:text-gray-200 transition">Create Study</a>
+                <a href="/pricing" class="text-white hover:text-gray-200 transition">Pricing</a>
+                <a href="/resources" class="text-white hover:text-gray-200 transition font-semibold">Resources</a>
+                <a href="/signup" class="bg-white text-[#4869E9] px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition">
+                    Sign Up
+                </a>
+            </div>
+
+            <button class="md:hidden text-white" id="mobile-menu-button">
+                <i data-lucide="menu" class="h-6 w-6"></i>
+            </button>
+        </nav>
+
+        <!-- Mobile Menu -->
+        <div class="hidden md:hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/" class="block px-3 py-2 text-white hover:bg-blue-600 rounded-md">Home</a>
+                <a href="/features" class="block px-3 py-2 text-white hover:bg-blue-600 rounded-md">Features</a>
+                <a href="/create-study" class="block px-3 py-2 text-white hover:bg-blue-600 rounded-md">Create Study</a>
+                <a href="/pricing" class="block px-3 py-2 text-white hover:bg-blue-600 rounded-md">Pricing</a>
+                <a href="/resources" class="block px-3 py-2 text-white hover:bg-blue-600 rounded-md">Resources</a>
+                <a href="/signup" class="block px-3 py-2 bg-white text-[#4869E9] rounded-md font-semibold mt-4">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">Resources</h1>
+
+        <!-- Resource Categories -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            <a href="#articles" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                <i data-lucide="file-text" class="h-8 w-8 text-primary mb-4"></i>
+                <h2 class="text-xl font-semibold mb-2">Articles</h2>
+                <p class="text-gray-600">In-depth guides and best practices</p>
+            </a>
+            <a href="#videos" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                <i data-lucide="video" class="h-8 w-8 text-primary mb-4"></i>
+                <h2 class="text-xl font-semibold mb-2">Videos</h2>
+                <p class="text-gray-600">Tutorials and expert interviews</p>
+            </a>
+            <a href="#downloads" class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                <i data-lucide="download" class="h-8 w-8 text-primary mb-4"></i>
+                <h2 class="text-xl font-semibold mb-2">Downloads</h2>
+                <p class="text-gray-600">Templates and useful tools</p>
+            </a>
+        </div>
+
+        <!-- Articles Section -->
+        <section id="articles" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Latest Articles</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="/placeholder.svg?height=200&width=400" alt="Article thumbnail" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">10 Tips for Effective User Interviews</h3>
+                        <p class="text-gray-600 mb-4">Learn how to conduct user interviews that yield valuable insights for your research.</p>
+                        <a href="#" class="text-primary font-semibold hover:underline">Read More</a>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <img src="/placeholder.svg?height=200&width=400" alt="Article thumbnail" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2">The Future of AI in UX Research</h3>
+                        <p class="text-gray-600 mb-4">Explore how artificial intelligence is revolutionizing the field of user experience research.</p>
+                        <a href="#" class="text-primary font-semibold hover:underline">Read More</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Videos Section -->
+        <section id="videos" class="mb-12">
+            <h2 class="text-2xl font-bold mb-6">Featured Videos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative pb-[56.25%]">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Video thumbnail" class="absolute w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i data-lucide="play-circle" class="h-16 w-16 text-white opacity-75 hover:opacity-100 transition"></i>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-2">Getting Started with Verita AI</h3>
+                        <p class="text-gray-600">A comprehensive guide to using our platform</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative pb-[56.25%]">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Video thumbnail" class="absolute w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i data-lucide="play-circle" class="h-16 w-16 text-white opacity-75 hover:opacity-100 transition"></i>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-2">Advanced AI Interview Techniques</h3>
+                        <p class="text-gray-600">Learn how to leverage AI for deeper insights</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="relative pb-[56.25%]">
+                        <img src="/placeholder.svg?height=200&width=400" alt="Video thumbnail" class="absolute w-full h-full object-cover">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i data-lucide="play-circle" class="h-16 w-16 text-white opacity-75 hover:opacity-100 transition"></i>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-semibold mb-2">Analyzing Research Data with Verita AI</h3>
+                        <p class="text-gray-600">Unlock powerful insights from your study results</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Downloads Section -->
+        <section id="downloads">
+            <h2 class="text-2xl font-bold mb-6">Useful Downloads</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <i data-lucide="file-text" class="h-8 w-8 text-primary mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">User Interview Template</h3>
+                    <p class="text-gray-600 mb-4">A customizable template to guide your user interviews</p>
+                    <a href="#" class="text-primary font-semibold hover:underline flex items-center">
+                        <i data-lucide="download" class="h-4 w-4 mr-2"></i>
+                        Download PDF
+                    </a>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <i data-lucide="clipboard-list" class="h-8 w-8 text-primary mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Research Planning Checklist</h3>
+                    <p class="text-gray-600 mb-4">Ensure you cover all bases in your research planning</p>
+                    <a href="#" class="text-primary font-semibold hover:underline flex items-center">
+                        <i data-lucide="download" class="h-4 w-4 mr-2"></i>
+                        Download Excel
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-100 mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex flex-wrap justify-between">
+                <div class="w-full md:w-1/4 mb-8 md:mb-0">
+                    <h3 class="text-lg font-semibold mb-4">Verita AI</h3>
+                    <p class="text-gray-600">Empowering researchers with AI-driven insights</p>
+                </div>
+                <div class="w-full md:w-1/4 mb-8 md:mb-0">
+                    <h3 class="text-lg font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="/" class="text-gray-600 hover:text-primary">Home</a></li>
+                        <li><a href="/features" class="text-gray-600 hover:text-primary">Features</a></li>
+                        <li><a href="/pricing" class="text-gray-600 hover:text-primary">Pricing</a></li>
+                        <li><a href="/resources" class="text-gray-600 hover:text-primary">Resources</a></li>
+                    </ul>
+                </div>
+                <div class="w-full md:w-1/4 mb-8 md:mb-0">
+                    <h3 class="text-lg font-semibold mb-4">Contact</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i data-lucide="mail" class="h-5 w-5 mr-2 text-gray-400"></i>
+                            <a href="mailto:info@veritaai.com" class="text-gray-600 hover:text-primary">info@veritaai.com</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i data-lucide="phone" class="h-5 w-5 mr-2 text-gray-400"></i>
+                            <span class="text-gray-600">+1 (555) 123-4567</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="w-full md:w-1/4">
+                    <h3 class="text-lg font-semibold mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-primary">
+                            <i data-lucide="twitter" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary">
+                            <i data-lucide="linkedin" class="h-6 w-6"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary">
+                            <i data-lucide="facebook" class="h-6 w-6"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 mt-8 pt-8 text-center">
+                <p class="text-gray-600">&copy; 2024 Verita AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Mobile menu functionality
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+</body>
+</html>
