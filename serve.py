@@ -34,5 +34,10 @@ def create_study():
 def dashboard():
     return render_template('dashboard.html')
 
+@app.route('/voice-agent')
+def voice_agent():
+    return render_template('vapi.html')
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
