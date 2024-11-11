@@ -274,3 +274,7 @@ def init_routes(app, socketio):
     @app.route('/resources')
     def resources():
         return render_template('resources.html')
+    
+    @app.route('/postresearch')
+    def postresearch():
+        return render_template('post-research-interview.html')
