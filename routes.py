@@ -218,7 +218,7 @@ def init_routes(app, socketio):
             return jsonify({'error': 'An error occurred while fetching insights'}), 500
     @app.route('/dashboard')
     def dashboard():
-        return render_template('index.html')
+        return render_template('dashboard.html')
 
     @app.route('/api/chat', methods=['POST'])
     def chat():

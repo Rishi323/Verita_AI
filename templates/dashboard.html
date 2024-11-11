@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Platform Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <!-- Sidebar -->
+    <div class="flex h-screen">
+        <!-- Left Sidebar -->
+        <div class="w-64 bg-white shadow-lg p-6">
+            <h1 class="text-xl font-bold mb-6">Research Platform</h1>
+            <ul class="space-y-4">
+                <li><a href="#" class="flex items-center text-gray-700 hover:text-black"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8.25v10.5A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V8.25M3 8.25V5.25A2.25 2.25 0 015.25 3h13.5A2.25 2.25 0 0121 5.25v3M3 8.25l9 6L21 8.25"/></svg>Overview</a></li>
+                <li><a href="#" class="flex items-center text-gray-700 hover:text-black"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6"/></svg>Studies</a></li>
+                <!-- Add more links as needed -->
+            </ul>
+        </div>
+
+        <!-- Main Dashboard Area -->
+        <div class="flex-grow p-8 bg-gray-50">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold">Dashboard Overview</h2>
+                <div>
+                    <button class="bg-gray-200 text-black px-4 py-2 rounded mr-4">New Recording</button>
+                    <button class="bg-black text-white px-4 py-2 rounded">New Study</button>
+                </div>
+            </div>
+
+            <!-- Overview Cards -->
+            <div class="grid grid-cols-4 gap-6">
+                <!-- Total Studies Card -->
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <h3 class="text-lg font-semibold mb-2">Total Studies</h3>
+                    <p class="text-3xl font-bold mb-1">12</p>
+                    <p class="text-sm text-gray-500">+2 from last month</p>
+                </div>
+
+                <!-- Total Recordings Card -->
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <h3 class="text-lg font-semibold mb-2">Total Recordings</h3>
+                    <p class="text-3xl font-bold mb-1">142</p>
+                    <p class="text-sm text-gray-500">+24 from last month</p>
+                </div>
+
+                <!-- AI Interviews Card -->
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <h3 class="text-lg font-semibold mb-2">AI Interviews</h3>
+                    <p class="text-3xl font-bold mb-1">32</p>
+                    <p class="text-sm text-gray-500">+3 from last month</p>
+                </div>
+
+                <!-- Stimuli Card -->
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <h3 class="text-lg font-semibold mb-2">Stimuli</h3>
+                    <p class="text-3xl font-bold mb-1">56</p>
+                    <p class="text-sm text-gray-500">+8 from last month</p>
+                </div>
+
+            </div> <!-- End of Overview Cards -->
+
+        </div> <!-- End of Main Dashboard Area -->
+
+    </div> <!-- End of Flex Container -->
+
+</body>
+</html>

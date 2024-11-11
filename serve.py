@@ -1,5 +1,4 @@
 from flask import Flask, render_template
-#import realtime
 
 app = Flask(__name__)
 
@@ -31,6 +30,14 @@ def sockettest():
 def create_study():
     return render_template('create-study.html')
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/voice-agent')
+def voice_agent():
+    return render_template('vapi.html')
+
+
 if __name__ == '__main__':
-    #realtime.setup_socketio(app)
     app.run(host='0.0.0.0', port=8080, debug=True)
