@@ -266,3 +266,11 @@ def init_routes(app, socketio):
     @app.route('/voice-agent')
     def voice_agent():
         return render_template('vapi.html')
+    
+    @app.route('/pricing')
+    def pricing():
+        return render_template('pricing.html')
+
+    @app.route('/resources')
+    def resources():
+        return render_template('resources.html')

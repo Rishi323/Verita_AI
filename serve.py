@@ -38,6 +38,17 @@ def dashboard():
 def voice_agent():
     return render_template('vapi.html')
 
+@app.route('/pricing')
+def pricing():
+    return render_template('pricing.html')
+
+@app.route('/pricing')
+def pricing():
+    return render_template('pricing.html')
+
+@app.route('/resources')
+def resources():
+    return render_template('resources.html')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
