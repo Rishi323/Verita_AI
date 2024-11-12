@@ -50,5 +50,9 @@ def pricing():
 def resources():
     return render_template('resources.html')
 
+@app.route('/postresearch')
+def postresearch():
+    return render_template('post-research-interview.html')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
