@@ -21,9 +21,9 @@
     </style>
   </head>
   <body class="bg-white">
-    <header class="bg-blue-500 p-4">
+    <header class="w-full py-4 px-4 md:px-6 bg-white border-b">
       <nav class="container mx-auto flex justify-between items-center">
-        <div class="flex items-center">
+        <a href="/" class="flex items-center space-x-2">
           <svg width="37" height="30" viewBox="0 0 37 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
             <g clip-path="url(#clip0_9_316)">
               <path
@@ -51,103 +51,114 @@
               fill="white"
             />
           </svg>
-        </div>
-
+        </a>
         <div class="space-x-4">
-          <a href="/" class="text-white">Home</a>
-          <a href="/features" class="text-white font-semibold">Features</a>
-          <a href="/create-study" class="text-white">Create Study</a>
-          <a href="#" class="text-white">Pricing</a>
-          <a href="#" class="text-white">Resources</a>
-          <a href="#" class="bg-white text-blue-500 px-4 py-2 rounded-full font-semibold">Sign Up</a>
+          <a href="/" class="text-gray-600">Home</a>
+          <a href="/features" class="text-gray-600">Features</a>
+          <a href="/pricing" class="text-gray-600">Pricing</a>
+          <a href="/resources" class="text-gray-600">Resources</a>
+          <a href="#" class="bg-blue-500 text-white px-4 py-2 rounded-full font-semibold transition duration-300 ease-in-out hover:bg-blue-600">Sign Up</a>
         </div>
       </nav>
     </header>
 
-    <main class="container mx-auto py-12">
-      <h1 class="text-3xl font-bold mb-8 text-center">Interview Transcript Assessment</h1>
-
-      <div class="max-w-3xl mx-auto">
-        <div class="mb-6">
-          <label for="framework" class="block text-sm font-medium text-gray-700 mb-2"
-            >Select UX Research Framework</label
-          >
-          <select
-            id="framework"
-            name="framework"
-            class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="nielsen">Nielsen's 10 Usability Heuristics</option>
-            <option value="ideo">IDEO's Human-Centered Design</option>
-            <option value="double_diamond">Double Diamond Design Process</option>
-            <option value="lean_ux">Lean UX</option>
-            <option value="jobs_to_be_done">Jobs to be Done (JTBD)</option>
-            <option value="jump_associates">Jump Associates' UX Research Framework</option>
-          </select>
+    <main class="flex-1">
+      <section class="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-blue-50 to-orange-50">
+        <div class="container mx-auto px-4">
+          <h1 class="text-4xl md:text-5xl font-bold text-center mb-8">Interview Assessment</h1>
+          <p class="text-xl text-gray-600 text-center max-w-3xl mx-auto mb-12">
+            Get instant feedback on your UX research interviews with our AI-powered assessment tool.
+          </p>
         </div>
+      </section>
 
-        <div class="mb-6">
-          <label for="transcription" class="block text-sm font-medium text-gray-700 mb-2"
-            >Paste Interview Transcript</label
-          >
-          <textarea
-            id="transcription"
-            name="transcription"
-            rows="10"
-            required
-            class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Paste your interview transcript here..."
-          ></textarea>
-        </div>
+      <section class="w-full py-12 px-4 bg-white">
+        <div class="container mx-auto">
+          <h1 class="text-3xl font-bold mb-8 text-center">Interview Transcript Assessment</h1>
 
-        <div class="flex justify-between items-center mb-8">
-          <!-- <button class="bg-blue-500 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-blue-600 transition duration-300">Analyze Transcript</button> -->
-          <button
-            id="startTranscription"
-            class="bg-green-500 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-green-600 transition duration-300"
-          >
-            Start Real-Time Transcription
-          </button>
-          <button
-            id="stopTranscription"
-            class="bg-red-500 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-red-600 transition duration-300"
-            style="display: none"
-          >
-            Stop Real-Time Transcription
-          </button>
-        </div>
-
-        <div class="bg-gray-100 p-6 rounded-lg">
-          <h2 class="text-xl font-bold mb-4">Interview Feedback</h2>
-          <div id="feedback" class="space-y-4 leading-normal">
-            <p class="text-gray-700">Your interview feedback will appear here after analysis.</p>
-            <!-- Placeholder for feedback content -->
-            <div id="loading" class="spinner-border text-primary" role="status" style="display: none">
-              <span class="visually-hidden">Loading...</span>
+          <div class="max-w-3xl mx-auto">
+            <div class="mb-6">
+              <label for="framework" class="block text-sm font-medium text-gray-700 mb-2"
+                >Select UX Research Framework</label
+              >
+              <select
+                id="framework"
+                name="framework"
+                class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="nielsen">Nielsen's 10 Usability Heuristics</option>
+                <option value="ideo">IDEO's Human-Centered Design</option>
+                <option value="double_diamond">Double Diamond Design Process</option>
+                <option value="lean_ux">Lean UX</option>
+                <option value="jobs_to_be_done">Jobs to be Done (JTBD)</option>
+                <option value="jump_associates">Jump Associates' UX Research Framework</option>
+              </select>
             </div>
-            <!-- <div class="hidden"> -->
-            <!-- <h3 class="font-semibold text-lg mb-2">Key Insights:</h3>
-                        <ul class="list-disc list-inside space-y-2">
-                            <li>Insight 1</li>
-                            <li>Insight 2</li>
-                            <li>Insight 3</li>
-                        </ul>
-                        <h3 class="font-semibold text-lg mt-4 mb-2">Recommendations:</h3>
-                        <ul class="list-disc list-inside space-y-2">
-                            <li>Recommendation 1</li>
-                            <li>Recommendation 2</li>
-                            <li>Recommendation 3</li>
-                        </ul> -->
-            <div id="assessment-results" class="mt-3"></div>
-            <div id="error-message" class="alert alert-danger mt-3" style="display: none"></div>
-            <!-- </div> -->
+
+            <div class="mb-6">
+              <label for="transcription" class="block text-sm font-medium text-gray-700 mb-2"
+                >Paste Interview Transcript</label
+              >
+              <textarea
+                id="transcription"
+                name="transcription"
+                rows="10"
+                required
+                class="block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Paste your interview transcript here..."
+              ></textarea>
+            </div>
+
+            <div class="flex justify-between items-center mb-8">
+              <!-- <button class="bg-blue-500 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-blue-600 transition duration-300">Analyze Transcript</button> -->
+              <button
+                id="startTranscription"
+                class="bg-green-500 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-green-600 transition duration-300"
+              >
+                Start Real-Time Transcription
+              </button>
+              <button
+                id="stopTranscription"
+                class="bg-red-500 text-white px-6 py-3 rounded-full font-semibold text-lg hover:bg-red-600 transition duration-300"
+                style="display: none"
+              >
+                Stop Real-Time Transcription
+              </button>
+            </div>
+
+            <div class="bg-gray-100 p-6 rounded-lg">
+              <h2 class="text-xl font-bold mb-4">Interview Feedback</h2>
+              <div id="feedback" class="space-y-4 leading-normal">
+                <p class="text-gray-700">Your interview feedback will appear here after analysis.</p>
+                <!-- Placeholder for feedback content -->
+                <div id="loading" class="spinner-border text-primary" role="status" style="display: none">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <!-- <div class="hidden"> -->
+                <!-- <h3 class="font-semibold text-lg mb-2">Key Insights:</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>Insight 1</li>
+                                <li>Insight 2</li>
+                                <li>Insight 3</li>
+                            </ul>
+                            <h3 class="font-semibold text-lg mt-4 mb-2">Recommendations:</h3>
+                            <ul class="list-disc list-inside space-y-2">
+                                <li>Recommendation 1</li>
+                                <li>Recommendation 2</li>
+                                <li>Recommendation 3</li>
+                            </ul> -->
+                <div id="assessment-results" class="mt-3"></div>
+                <div id="error-message" class="alert alert-danger mt-3" style="display: none"></div>
+                <!-- </div> -->
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </main>
 
-    <footer class="bg-blue-500 text-white py-12 mt-12">
-      <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
+    <footer class="w-full py-12 md:py-24 bg-gradient-to-r from-blue-50 to-orange-50">
+      <div class="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-gray-600">
         <div>
           <div class="flex items-center">
             <svg width="37" height="30" viewBox="0 0 37 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
