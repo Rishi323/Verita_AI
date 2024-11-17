@@ -14,28 +14,37 @@ from openai import OpenAI
 from flask import Flask, request, jsonify, render_template
 
 IMAGE_PARSE_PROMPT = """
-You are given different images to digest. Diligently and expertly process the information regarding those images. Then you must act like an expert user researcher who is extremely knowledgeable in the world of enterprise software and is thoroughly interested in gleaning the best insights possible from user interviews. 
-Your questions should be open-ended, probing, and adaptable to the product's evolving features. Your goal is to understand the user's perspective and identify opportunities for enhancing the product's usability and user experience. Ask a series of questions that would help a product team understand user motivations, barriers to use, and desired features. 
-Consider questions about the user's workflow, emotional response to the product, and any potential frustrations or limitations they might encounter. You must be asking detailed questions from start to end to understand the process. Also describe each image, including important details that were not covered in your questions.
-Context: Naturally progress through starting the user interview about our given product that we shared through our multi-modal images/videos. As you progress, ensure you are hitting the top UX user interview questions.
+You are given different images to digest along with a discussion guide and additional context. Your role is to act as an expert user researcher who is extremely knowledgeable in the world of enterprise software.
+
+Discussion Guide Context: {discussion_guide}
+
+Additional Context: {additional_info}
+
+Your questions should be open-ended, probing, and adaptable to the product's evolving features, while following the structure and objectives outlined in the discussion guide. Your goal is to understand the user's perspective and identify opportunities for enhancing the product's usability and user experience.
+
+Consider:
+1. Questions from the discussion guide
+2. User's workflow and emotional response
+3. Potential frustrations or limitations
+4. Specific areas of focus mentioned in the guide
 
 Output Format:
 #####
-General Questions: [1-5 questions]
+General Questions: [1-5 questions aligned with discussion guide]
 #####
 Image 1: 
 [Description of the image]
-[(1-3 questions)]
+[(1-3 questions incorporating guide themes)]
 ###
 Image 2: 
 [Description of the image]
-[(1-3 questions)]
+[(1-3 questions incorporating guide themes)]
 ###
 ...
 ###
 Image N: 
 [Description of the image]
-[(1-3 questions)]
+[(1-3 questions incorporating guide themes)]
 #####
 """
 
@@ -45,18 +54,25 @@ Refer to each image by its number. Wait for a user response before moving on to 
 Space out the general questions throughout the interview, DO NOT ask them all at the beginning. Ask at most one general question at the beginning. There may be contexts where a general question is a suitable follow-up to a user's response.
 """
 
-
 dotenv.load_dotenv()
 client = OpenAI()
 client.api_key = os.environ.get("OPENAI_API_KEY")
 
 app = Flask(__name__)
 
-def get_openai_response(imageList, additionalInfo):
+def get_openai_response(imageList, additionalInfo, guide_content=None):
+    # Format the prompt with discussion guide and additional info
+    formatted_prompt = IMAGE_PARSE_PROMPT.format(
+        discussion_guide=guide_content if guide_content else "No discussion guide provided.",
+        additional_info=additionalInfo if additionalInfo else "No additional context provided."
+    )
+    
+    # Log the final formatted prompt
+    logger.info("Final formatted prompt with discussion guide:")
+    logger.info(formatted_prompt)
+    
     content_partial = [{"type": "image_url", "image_url":{"url": image}} for image in imageList]
-    content_partial.append({"type": "text", "text": IMAGE_PARSE_PROMPT})
-    if additionalInfo:
-        content_partial.append({"type": "text", "text": additionalInfo})
+    content_partial.append({"type": "text", "text": formatted_prompt})
 
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -76,7 +92,6 @@ def get_openai_response(imageList, additionalInfo):
         }
     )
     return response.choices[0].message.content
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -118,6 +133,7 @@ def init_routes(app, socketio):
         try:
             logger.info(f"Received transcription: {data['transcription']}")
             logger.info(f"Selected framework: {data['framework']}")
+
             transcription_text = data['transcription']
             framework = data['framework']
             project_id = data.get('project_id')
@@ -216,6 +232,7 @@ def init_routes(app, socketio):
             logger.error(f"Error in get_insights: {str(e)}")
             logger.error(f"Traceback: {traceback.format_exc()}")
             return jsonify({'error': 'An error occurred while fetching insights'}), 500
+
     @app.route('/dashboard')
     def dashboard():
         return render_template('dashboard.html')
@@ -225,44 +242,82 @@ def init_routes(app, socketio):
         # Parse form data into JSON
         p_json = request.form.to_dict(flat=False)
         imageList = request.files
-        additionalInfo = p_json.get('additionalInfo')[0]
-        additionalQuestions = p_json.get('additionalQuestions')[0]
+        additionalInfo = p_json.get('additionalInfo')[0] if p_json.get('additionalInfo') else ""
+        additionalQuestions = p_json.get('additionalQuestions')[0] if p_json.get('additionalQuestions') else ""
         
         if not imageList:
             return jsonify({'error': 'Images are required'}), 400
         
+        # Handle discussion guide file
+        guide_file = request.files.get('guide')
+        guide_content = None
+        if guide_file:
+            try:
+                logger.info(f"Processing discussion guide file: {guide_file.filename}")
+                # Read and process the discussion guide based on file type
+                if guide_file.filename.endswith('.txt'):
+                    guide_content = guide_file.read().decode('utf-8')
+                    logger.info("TXT Content extracted:")
+                    logger.info(guide_content)
+                elif guide_file.filename.endswith('.pdf'):
+                    from PyPDF2 import PdfReader
+                    reader = PdfReader(guide_file)
+                    guide_content = "\n".join([page.extract_text() for page in reader.pages])
+                    logger.info("PDF Content extracted:")
+                    logger.info(guide_content)
+                elif guide_file.filename.endswith(('.doc', '.docx')):
+                    from docx import Document
+                    doc = Document(guide_file)
+                    guide_content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+                    logger.info("DOCX Content extracted:")
+                    logger.info(guide_content)
+                logger.info("Successfully processed discussion guide file")
+            except Exception as e:
+                logger.error(f"Error processing discussion guide file: {str(e)}")
+                logger.error(f"Traceback: {traceback.format_exc()}")
+                return jsonify({'error': 'Failed to process discussion guide file'}), 400
+        else:
+            logger.info("No discussion guide file provided")
+        
         # Reformat image data to be compatible with OpenAI API
-        # Get image data from <FileStorage> object and determine MIME type
-        imageList = [
-            f"data:{image.content_type};base64,{base64.b64encode(image.read()).decode('utf-8')}"
-            for image in imageList.getlist('images')
-        ]
+        try:
+            imageList = [
+                f"data:{image.content_type};base64,{base64.b64encode(image.read()).decode('utf-8')}"
+                for image in imageList.getlist('images')
+            ]
+        except Exception as e:
+            logger.error(f"Error processing image files: {str(e)}")
+            return jsonify({'error': 'Failed to process image files'}), 400
 
-        response = get_openai_response(imageList, additionalInfo)
+        try:
+            response = get_openai_response(imageList, additionalInfo, guide_content)
 
-        if additionalQuestions:
-            response += f"\n{additionalQuestions}"
+            if additionalQuestions:
+                response += f"\n{additionalQuestions}"
 
-        vapi_override_message = {
-            'firstMessage': "Welcome to this interview! I'd love to ask you some questions - let's get started!",
-            'model': {
-                'provider': "openai",
-                'model': "gpt-3.5-turbo",
-                'messages': [
-                    {
-                        'role': "system",
-                        'content': INTERVIEW_PROMPT,
-                    },
-                    {
-                        'role': "system",
-                        'content': response,
-                    },
-                ],
-            },
-        }
+            vapi_override_message = {
+                'firstMessage': "Welcome to this interview! I'd love to ask you some questions based on the discussion guide and images provided.",
+                'model': {
+                    'provider': "openai",
+                    'model': "gpt-3.5-turbo",
+                    'messages': [
+                        {
+                            'role': "system",
+                            'content': INTERVIEW_PROMPT,
+                        },
+                        {
+                            'role': "system",
+                            'content': response,
+                        },
+                    ],
+                },
+            }
 
-        return jsonify({'response': vapi_override_message})
- 
+            return jsonify({'response': vapi_override_message})
+        except Exception as e:
+            logger.error(f"Error in chat processing: {str(e)}")
+            return jsonify({'error': 'An error occurred while processing your request'}), 500
+
     @app.route('/voice-agent')
     def voice_agent():
         return render_template('vapi.html')
