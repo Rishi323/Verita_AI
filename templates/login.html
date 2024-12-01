@@ -6,6 +6,15 @@
     <title>Log in - Verita AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script>
+        // Create a single supabase client for interacting with your database
+        const { createClient } = supabase;
+        const supabaseClient = createClient(
+            '{{ config["SUPABASE_URL"] }}',
+            '{{ config["SUPABASE_API_KEY"] }}'
+        );
+    </script>
     <style>
         body {
             background: linear-gradient(to bottom, rgba(239, 246, 255, 0.5), rgba(254, 242, 242, 0.5));
