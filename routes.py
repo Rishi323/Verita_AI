@@ -342,3 +342,7 @@ def init_routes(app, socketio):
     def signup():
         return render_template('sign-up.html')
     
+    @app.route('/ab-testing')
+    def usabilitytest():
+        return render_template('ab-testing.html')
+    
