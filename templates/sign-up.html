@@ -122,24 +122,27 @@
     </div>
 
     <script>
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+        // Initialize Supabase client
+        const supabaseUrl = 'https://czzddubdxtidgbmuxchz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6emRkdWJkeHRpZGdibXV4Y2h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMwMDY2NjksImV4cCI6MjA0ODU4MjY2OX0.4rb-w9_XLiUuTZxjFE2YrieB5ILfG31jvMgJtGXaGzw';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            
+    
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
-
+    
             if (password !== confirmPassword) {
                 alert('Passwords do not match');
                 return;
             }
-
+    
             try {
-                // Sign up the user
-                const { data: authData, error: authError } = await supabase.auth.signUp({
+                // Step 1: Sign up the user
+                const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
                     email,
                     password,
                     options: {
@@ -148,31 +151,38 @@
                         }
                     }
                 });
-
-                if (authError) throw authError;
-
-                if (authData) {
-                    // Create a profile in the profiles table
-                    const { error: profileError } = await supabase
-                        .from('profiles')
+    
+                if (signUpError) throw signUpError;
+    
+                if (authData && authData.user) {
+                    // Step 2: Insert user information
+                    const { error: profileError } = await supabaseClient
+                        .from('user_profiles')  // Changed from "User Information"
                         .insert([
                             {
-                                id: authData.user.id,
+                                id: authData.user.id,  // Changed from uuid to id
                                 full_name: name,
-                                email: email
+                                email: email,
+                                created_at: new Date().toISOString()
                             }
                         ]);
+    
+                    if (profileError) {
+                        console.error('Profile Error:', profileError);
+                        throw new Error('Failed to create user profile');
+                    }
 
-                    if (profileError) throw profileError;
-
-                    // Redirect to the first onboarding page
-                    window.location.href = 'templates/onboarding/user-type.html';
+                    // Step 3: Redirect to onboarding
+                    window.location.href = '/onboarding/user-type';
+                } else {
+                    throw new Error('No user data returned from sign up');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert(error.message);
+                alert(error.message || 'An error occurred during sign up');
             }
         });
     </script>
 </body>
 </html>
+

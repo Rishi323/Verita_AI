@@ -50,6 +50,13 @@
             document.getElementById('otherGoalContainer').style.display = this.checked ? 'block' : 'none';
         });
 
+        document.addEventListener('DOMContentLoaded', async () => {
+    const isAuthenticated = await requireAuth();
+    if (!isAuthenticated) return;
+    
+    // Rest of your page initialization code
+});
+
         document.getElementById('goalsForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             const formData = new FormData(this);

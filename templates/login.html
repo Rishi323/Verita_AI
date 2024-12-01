@@ -105,31 +105,30 @@
     </div>
 
     <script>
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+        const loginForm = document.getElementById('loginForm');
 
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+loginForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
 
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password
-                });
-
-                if (error) throw error;
-
-                if (data) {
-                    // Redirect to the dashboard/home page after successful login
-                    window.location.href = '/';
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert(error.message);
-            }
+    try {
+        const { data: { user }, error } = await supabase.auth.signInWithPassword({
+            email,
+            password
         });
+
+        if (error) throw error;
+
+        if (user) {
+            localStorage.setItem('user', JSON.stringify(user));
+            window.location.href = '/';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message);
+    }
+});
     </script>
 </body>
 </html>

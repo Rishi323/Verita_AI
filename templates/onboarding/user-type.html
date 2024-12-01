@@ -53,6 +53,13 @@
         document.getElementById('other').addEventListener('change', function() {
             document.getElementById('otherTypeContainer').style.display = this.checked ? 'block' : 'none';
         });
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+    const isAuthenticated = await requireAuth();
+    if (!isAuthenticated) return;
+    
+    // Rest of your page initialization code
+});
 
         document.getElementById('userTypeForm').addEventListener('submit', async function(e) {
             e.preventDefault();
