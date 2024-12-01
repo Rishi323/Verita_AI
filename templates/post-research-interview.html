@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post-Research Interview - Verita AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#4869E9',
+                        'primary-hover': '#3d5bd8',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-white font-sans">
+    <!-- Navigation -->
+    <header class="bg-white border-b border-gray-200">
+        <nav class="container mx-auto flex justify-between items-center px-4 py-4">
+            <div class="flex items-center">
+                <svg width="37" height="30" viewBox="0 0 37 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
+                    <g clip-path="url(#clip0_9_316)">
+                        <path
+                            d="M0 2.86525V9.6182C0 11.6749 2.50611 12.7719 4.03763 11.3322L11.3471 4.5792C12.9483 3.1052 11.904 0.5 9.71119 0.5H2.40169C1.07902 0.5 0 1.56265 0 2.86525Z"
+                            fill="#4869E9"
+                        />
+                        <path
+                            d="M34.5983 0.5H27.2888C25.1308 0.5 24.0517 3.1052 25.6529 4.5792L32.9624 11.3322C34.4939 12.7376 37 11.6749 37 9.6182V2.86525C37 1.56265 35.921 0.5 34.5983 0.5Z"
+                            fill="#4869E9"
+                        />
+                        <path
+                            d="M20.1533 15.3002L32.9624 27.1608C34.4939 28.5662 37 27.5035 37 25.4468V18.6253C37 17.974 36.7215 17.357 36.2342 16.9113L20.1533 2C19.2135 1.14303 17.7865 1.14303 16.8467 2L0.765757 16.9113C0.278457 17.357 0 17.974 0 18.6253V25.4468C0 27.5035 2.50611 28.6005 4.03763 27.1608L16.8467 15.3002C17.7865 14.4433 19.2135 14.4433 20.1533 15.3002Z"
+                            fill="#4869E9"
+                        />
+                    </g>
+                    <defs>
+                        <clipPath id="clip0_9_316">
+                            <rect width="37" height="29" fill="white" transform="translate(0 0.5)" />
+                        </clipPath>
+                    </defs>
+                </svg>
+                <span class="text-2xl font-bold text-[#4869E9]">Verita AI</span>
+            </div>
+            <div class="space-x-4">
+                <a href="/" class="text-gray-600">Home</a>
+                <a href="/features" class="text-gray-600">Features</a>
+                <a href="/pricing" class="text-gray-600">Pricing</a>
+                <a href="/resources" class="text-gray-600">Resources</a>
+                <a href="/dashboard" class="text-gray-600">Dashboard</a>
+                <a href="#" class="bg-[#4869E9] text-white px-4 py-2 rounded-full font-semibold">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 py-12">
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Post-Research Interview</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Conduct and analyze post-research interviews with AI assistance</p>
+        </div>
+
+        <!-- Interview Section -->
+        <div class="bg-gradient-to-r from-blue-50 to-orange-50 rounded-2xl p-8 mb-12">
+            <div class="max-w-4xl mx-auto">
+                <!-- Interview Form -->
+                <form class="space-y-6">
+                    <div>
+                        <label for="participant" class="block text-sm font-medium text-gray-900 mb-2">Participant Name</label>
+                        <input type="text" id="participant" name="participant" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary">
+                    </div>
+
+                    <div>
+                        <label for="study" class="block text-sm font-medium text-gray-900 mb-2">Study Name</label>
+                        <input type="text" id="study" name="study" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary">
+                    </div>
+
+                    <div>
+                        <label for="questions" class="block text-sm font-medium text-gray-900 mb-2">Interview Questions</label>
+                        <textarea id="questions" name="questions" rows="4" class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#4869E9] focus:border-[#4869E9]" placeholder="Enter your interview questions here..."></textarea>
+                    </div>
+
+                    <!-- Media Upload Section -->
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold text-gray-900">Media Upload</h3>
+                        
+                        <!-- Upload Options -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Audio Recording -->
+                            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <i data-lucide="mic" class="h-5 w-5 text-gray-700"></i>
+                                    <h4 class="font-medium text-gray-900">Audio Recording</h4>
+                                </div>
+                                <div class="space-y-3">
+                                    <button class="w-full bg-[#4869E9] text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition flex items-center justify-center gap-2">
+                                        <i data-lucide="mic" class="h-4 w-4"></i>
+                                        Start Recording
+                                    </button>
+                                    <div class="flex items-center gap-2">
+                                        <input type="file" accept="audio/*" class="hidden" id="audio-upload">
+                                        <label for="audio-upload" class="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center gap-2 cursor-pointer">
+                                            <i data-lucide="upload" class="h-4 w-4"></i>
+                                            Upload Audio File
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Video Recording -->
+                            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <i data-lucide="video" class="h-5 w-5 text-gray-700"></i>
+                                    <h4 class="font-medium text-gray-900">Video Recording</h4>
+                                </div>
+                                <div class="space-y-3">
+                                    <button class="w-full bg-[#4869E9] text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition flex items-center justify-center gap-2">
+                                        <i data-lucide="video" class="h-4 w-4"></i>
+                                        Start Recording
+                                    </button>
+                                    <div class="flex items-center gap-2">
+                                        <input type="file" accept="video/*" class="hidden" id="video-upload">
+                                        <label for="video-upload" class="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center gap-2 cursor-pointer">
+                                            <i data-lucide="upload" class="h-4 w-4"></i>
+                                            Upload Video File
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Screen Recording -->
+                            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <i data-lucide="monitor" class="h-5 w-5 text-gray-700"></i>
+                                    <h4 class="font-medium text-gray-900">Screen Recording</h4>
+                                </div>
+                                <div class="space-y-3">
+                                    <button class="w-full bg-[#4869E9] text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-600 transition flex items-center justify-center gap-2">
+                                        <i data-lucide="monitor" class="h-4 w-4"></i>
+                                        Start Screen Recording
+                                    </button>
+                                    <div class="flex items-center gap-2">
+                                        <input type="file" accept="video/*" class="hidden" id="screen-upload">
+                                        <label for="screen-upload" class="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center gap-2 cursor-pointer">
+                                            <i data-lucide="upload" class="h-4 w-4"></i>
+                                            Upload Screen Recording
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Document Upload -->
+                            <div class="border border-gray-200 rounded-lg p-4 bg-white">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <i data-lucide="file-text" class="h-5 w-5 text-gray-700"></i>
+                                    <h4 class="font-medium text-gray-900">Documents & Notes</h4>
+                                </div>
+                                <div class="space-y-3">
+                                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                        <input type="file" multiple accept=".pdf,.doc,.docx,.txt" class="hidden" id="document-upload">
+                                        <label for="document-upload" class="cursor-pointer">
+                                            <i data-lucide="upload-cloud" class="h-8 w-8 text-gray-400 mx-auto mb-2"></i>
+                                            <p class="text-sm text-gray-600">Drag and drop or click to upload documents</p>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upload Progress -->
+                        <div class="bg-white rounded-lg p-4 border border-gray-200">
+                            <h4 class="font-medium text-gray-900 mb-4">Upload Progress</h4>
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="flex-1">
+                                        <div class="flex justify-between text-sm mb-1">
+                                            <span class="text-gray-700">interview-audio.mp3</span>
+                                            <span class="text-gray-500">75%</span>
+                                        </div>
+                                        <div class="h-2 bg-gray-200 rounded-full">
+                                            <div class="h-2 bg-[#4869E9] rounded-full" style="width: 75%"></div>
+                                        </div>
+                                    </div>
+                                    <button class="text-gray-400 hover:text-red-500">
+                                        <i data-lucide="x" class="h-5 w-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" class="px-6 py-2 bg-gray-100 text-gray-900 rounded-lg hover:bg-gray-200">Save Draft</button>
+                        <button type="submit" class="px-6 py-2 bg-[#4869E9] text-white rounded-lg hover:bg-primary-hover">Start Interview</button>
+                    </div>
+                </form>
+
+                <!-- Previous Interviews -->
+                <div class="mt-12">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Previous Interviews</h2>
+                    <div class="bg-white rounded-lg shadow-sm divide-y">
+                        <div class="p-4 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-semibold text-gray-900">John Doe - Product Usability Study</h3>
+                                <p class="text-sm text-gray-600">Conducted on March 15, 2024</p>
+                            </div>
+                            <button class="text-primary hover:text-primary-hover">View Results</button>
+                        </div>
+                        <div class="p-4 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-semibold text-gray-900">Jane Smith - Feature Feedback Session</h3>
+                                <p class="text-sm text-gray-600">Conducted on March 14, 2024</p>
+                            </div>
+                            <button class="text-primary hover:text-primary-hover">View Results</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gradient-to-r from-blue-50 to-orange-50">
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-4 gap-8">
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Product</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Features</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Pricing</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Resources</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">About</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Blog</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Careers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Support</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Help Center</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Contact</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Status</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-gray-900 mb-4">Legal</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Privacy</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Terms</a></li>
+                        <li><a href="#" class="text-gray-600 hover:text-gray-900">Security</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // File upload handling
+        document.querySelectorAll('input[type="file"]').forEach(input => {
+            input.addEventListener('change', function(e) {
+                if (this.files && this.files[0]) {
+                    // Add file to progress section
+                    const fileName = this.files[0].name;
+                    // Implementation for file upload progress would go here
+                }
+            });
+        });
+
+        // Recording functionality
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        async function startRecording(type) {
+            try {
+                let stream;
+                if (type === 'audio') {
+                    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                } else if (type === 'video') {
+                    stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                } else if (type === 'screen') {
+                    stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+                }
+
+                mediaRecorder = new MediaRecorder(stream);
+                recordedChunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, {
+                        type: type === 'audio' ? 'audio/webm' : 'video/webm'
+                    });
+                    const url = URL.createObjectURL(blob);
+                    // Implementation for handling the recorded file would go here
+                };
+
+                mediaRecorder.start();
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Could not start recording: ' + err.message);
+            }
+        }
+
+        // Add event listeners for recording buttons
+        document.querySelector('button:has(i[data-lucide="mic"])').addEventListener('click', () => startRecording('audio'));
+        document.querySelector('button:has(i[data-lucide="video"])').addEventListener('click', () => startRecording('video'));
+        document.querySelector('button:has(i[data-lucide="monitor"])').addEventListener('click', () => startRecording('screen'));
+    </script>
+</body>
+</html>
