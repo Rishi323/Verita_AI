@@ -110,7 +110,7 @@ def init_routes(app, socketio):
         return render_template('assessmentold.html', frameworks=UX_FRAMEWORKS)
 
     @app.route('/features', methods=['GET'])
-    def login():
+    def features():
         return render_template('features.html')
     
     @app.route('/automated-transcription')
@@ -333,3 +333,12 @@ def init_routes(app, socketio):
     @app.route('/postresearch')
     def postresearch():
         return render_template('post-research-interview.html')
+    
+    @app.route('/login')
+    def login():
+        return render_template('login.html')
+    
+    @app.route('/sign-up')
+    def signup():
+        return render_template('sign-up.html')
+    

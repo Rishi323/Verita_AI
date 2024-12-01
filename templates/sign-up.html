@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Verita AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background: linear-gradient(to bottom, rgba(239, 246, 255, 0.5), rgba(254, 242, 242, 0.5));
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #374151;
+            background-color: #fff;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #2563EB;
+            ring: 1px #2563EB;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4">
+        <header class="flex justify-between items-center py-6">
+            <a href="/" class="flex items-center space-x-2">
+                <img src="/logo.svg" alt="Verita AI" width="100" height="24" />
+            </a>
+            <nav>
+                <a href="/login" class="text-sm text-gray-600 hover:text-gray-900">
+                    Log in
+                </a>
+            </nav>
+        </header>
+
+        <main class="flex justify-center items-center min-h-[calc(100vh-80px)]">
+            <div class="w-full max-w-md space-y-8">
+                <div class="text-center">
+                    <h1 class="text-2xl font-semibold tracking-tight">Create your account</h1>
+                    <p class="mt-2 text-sm text-gray-600">
+                        Join Verita AI to transform your UX research
+                    </p>
+                </div>
+
+                <div class="bg-white shadow-sm rounded-lg p-6 space-y-4">
+                    <form id="signupForm" class="space-y-4">
+                        <div class="space-y-2">
+                            <label for="name" class="form-label">Name</label>
+                            <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                required
+                                class="form-input"
+                                placeholder="Enter your full name"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <label for="email" class="form-label">Email</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                                class="form-input"
+                                placeholder="Enter your email"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <label for="password" class="form-label">Password</label>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                                class="form-input"
+                                placeholder="Create a password"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                type="password"
+                                required
+                                class="form-input"
+                                placeholder="Confirm your password"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            class="w-full py-2 px-4 mt-4 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+                        >
+                            Sign Up
+                        </button>
+                    </form>
+
+                    <p class="mt-4 text-center text-sm text-gray-600">
+                        Already have an account?
+                        <a href="/login" class="font-semibold text-blue-600 hover:text-blue-500">
+                            Log in
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            try {
+                // Sign up the user
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        data: {
+                            full_name: name
+                        }
+                    }
+                });
+
+                if (authError) throw authError;
+
+                if (authData) {
+                    // Create a profile in the profiles table
+                    const { error: profileError } = await supabase
+                        .from('profiles')
+                        .insert([
+                            {
+                                id: authData.user.id,
+                                full_name: name,
+                                email: email
+                            }
+                        ]);
+
+                    if (profileError) throw profileError;
+
+                    // Redirect to the first onboarding page
+                    window.location.href = 'templates/onboarding/user-type.html';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message);
+            }
+        });
+    </script>
+</body>
+</html>
