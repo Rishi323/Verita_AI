@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv, find_dotenv
-from flask import Flask
+from flask import Flask, render_template
 from flask_socketio import SocketIO
 from flask_migrate import Migrate
 from extensions import db
@@ -30,39 +30,33 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 try:
     # Read environment variables
     supabase_url = os.getenv('SUPABASE_URL')
-    supabase_key = os.getenv('SUPABASE_KEY')
+    supabase_key = os.getenv('SUPABASE_SERVICE_ROLE_KEY')  # Use service role key for server-side
     
     print(f"\nDebug Info:")
     print(f"Raw SUPABASE_URL: {supabase_url}")
-    
-    # Clean up the URL if needed
-    if supabase_url:
-        supabase_url = supabase_url.strip().strip("'").strip('"')
-    if supabase_key:
-        supabase_key = supabase_key.strip().strip("'").strip('"')
-    
-    print(f"Cleaned SUPABASE_URL: {supabase_url}")
     print(f"SUPABASE_KEY present: {'Yes' if supabase_key else 'No'}")
     
     if not supabase_url or not supabase_key:
         raise ValueError("Missing Supabase credentials")
-        
+    
+    # Clean up the URL if needed
+    supabase_url = supabase_url.strip().strip("'").strip('"')
+    
+    print(f"Cleaned SUPABASE_URL: {supabase_url}")
+    
     if not supabase_url.startswith('https://'):
         raise ValueError(f"Invalid Supabase URL format. URL must start with https:// but got: {supabase_url}")
     
-    print("Creating Supabase client...")
-    supabase: Client = create_client(
-        supabase_url=supabase_url,
-        supabase_key=supabase_key
-    )
-    print("Supabase client created successfully!")
+    # Initialize Supabase client
+    supabase = create_client(supabase_url, supabase_key)
+    app.config['supabase'] = supabase
+    print("Supabase client initialized successfully!")
     
 except Exception as e:
-    print(f"Error setting up Supabase: {str(e)}")
-    raise
+    print(f"Error initializing Supabase client: {str(e)}")
+    supabase = None
 
 # Add Supabase instance to Flask app config
-app.config['supabase'] = supabase
 app.config['SUPABASE_URL'] = supabase_url
 app.config['SUPABASE_API_KEY'] = supabase_key
 
@@ -75,6 +69,11 @@ from models import Transcription, Assessment, Project
 from routes import init_routes
 
 init_routes(app, socketio)
+
+# AB Testing specific routes
+@app.route('/ab-testing')
+def ab_testing():
+    return render_template('ab-testing.html')
 
 # Helper function to get Supabase client
 def get_supabase():
