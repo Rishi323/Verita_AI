@@ -102,6 +102,42 @@
                                 placeholder="Confirm your password"
                             />
                         </div>
+
+                        <div class="space-y-2 pt-4">
+                            <label class="form-label">Who are you?</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" id="designer" name="userType" value="Designer" required class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                    <label for="designer" class="text-sm text-gray-700">Designer</label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" id="freelancer" name="userType" value="Freelancer" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                    <label for="freelancer" class="text-sm text-gray-700">Freelancer</label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" id="uxResearcher" name="userType" value="UX Researcher" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                    <label for="uxResearcher" class="text-sm text-gray-700">UX Researcher</label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" id="student" name="userType" value="Student" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                    <label for="student" class="text-sm text-gray-700">Student</label>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <input type="radio" id="other" name="userType" value="Other" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                    <label for="other" class="text-sm text-gray-700">Other</label>
+                                </div>
+                            </div>
+                            <div id="otherTypeContainer" class="hidden mt-2">
+                                <input
+                                    type="text"
+                                    id="otherType"
+                                    name="otherType"
+                                    class="form-input"
+                                    placeholder="Please specify"
+                                />
+                            </div>
+                        </div>
+
                         <button
                             type="submit"
                             class="w-full py-2 px-4 mt-4 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
@@ -127,6 +163,11 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6emRkdWJkeHRpZGdibXV4Y2h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMwMDY2NjksImV4cCI6MjA0ODU4MjY2OX0.4rb-w9_XLiUuTZxjFE2YrieB5ILfG31jvMgJtGXaGzw';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+        // Show/hide other type input
+        document.getElementById('other').addEventListener('change', function() {
+            document.getElementById('otherTypeContainer').style.display = this.checked ? 'block' : 'none';
+        });
+
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
     
@@ -134,49 +175,42 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
+            const userType = document.querySelector('input[name="userType"]:checked')?.value;
+            const otherType = document.getElementById('otherType').value;
+            const finalUserType = userType === 'Other' ? otherType : userType;
+
+            if (!userType) {
+                alert('Please select who you are');
+                return;
+            }
     
             if (password !== confirmPassword) {
                 alert('Passwords do not match');
                 return;
             }
-    
-            try {
-                // Step 1: Sign up the user
-                const { data: authData, error: signUpError } = await supabaseClient.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            full_name: name
-                        }
-                    }
-                });
-    
-                if (signUpError) throw signUpError;
-    
-                if (authData && authData.user) {
-                    // Step 2: Insert user information
-                    const { error: profileError } = await supabaseClient
-                        .from('user_profiles')  // Changed from "User Information"
-                        .insert([
-                            {
-                                id: authData.user.id,  // Changed from uuid to id
-                                full_name: name,
-                                email: email,
-                                created_at: new Date().toISOString()
-                            }
-                        ]);
-    
-                    if (profileError) {
-                        console.error('Profile Error:', profileError);
-                        throw new Error('Failed to create user profile');
-                    }
 
-                    // Step 3: Redirect to onboarding
-                    window.location.href = '/onboarding/user-type';
-                } else {
-                    throw new Error('No user data returned from sign up');
+            try {
+                const response = await fetch('/sign-up', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        userType: finalUserType
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to sign up');
                 }
+
+                // Redirect to dashboard after successful signup
+                window.location.href = '/dashboard';
             } catch (error) {
                 console.error('Error:', error);
                 alert(error.message || 'An error occurred during sign up');
@@ -185,4 +219,3 @@
     </script>
 </body>
 </html>
-

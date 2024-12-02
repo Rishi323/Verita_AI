@@ -48,18 +48,19 @@
     </div>
 
     <script>
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+        // Initialize Supabase client
+        const supabaseUrl = 'https://czzddubdxtidgbmuxchz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6emRkdWJkeHRpZGdibXV4Y2h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMwMDY2NjksImV4cCI6MjA0ODU4MjY2OX0.4rb-w9_XLiUuTZxjFE2YrieB5ILfG31jvMgJtGXaGzw';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         document.getElementById('other').addEventListener('change', function() {
             document.getElementById('otherTypeContainer').style.display = this.checked ? 'block' : 'none';
         });
         
         document.addEventListener('DOMContentLoaded', async () => {
-    const isAuthenticated = await requireAuth();
-    if (!isAuthenticated) return;
-    
-    // Rest of your page initialization code
-});
+            const isAuthenticated = await requireAuth();
+            if (!isAuthenticated) return;
+        });
 
         document.getElementById('userTypeForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -72,13 +73,15 @@
                 const { data: { user }, error } = await supabase.auth.getUser();
                 if (error) throw error;
 
-                const { data, error: updateError } = await supabase
+                const { error: updateError } = await supabase
                     .from('user_profiles')
-                    .upsert({ user_id: user.id, user_type: finalUserType });
+                    .update({ user_type: finalUserType })
+                    .eq('id', user.id);
 
                 if (updateError) throw updateError;
 
-                window.location.href = 'templates/onboarding/experience-level.html';
+                // Redirect to the next onboarding step
+                window.location.href = '/onboarding/experience-level';
             } catch (error) {
                 console.error('Error:', error.message);
                 alert('An error occurred. Please try again.');
@@ -87,4 +90,3 @@
     </script>
 </body>
 </html>
-

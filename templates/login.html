@@ -5,15 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log in - Verita AI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
     <script>
-        // Create a single supabase client for interacting with your database
-        const { createClient } = supabase;
-        const supabaseClient = createClient(
-            '{{ config["SUPABASE_URL"] }}',
-            '{{ config["SUPABASE_API_KEY"] }}'
-        );
+        window.onload = function() {
+            // Initialize the Supabase client
+            const supabaseUrl = '{{ config["SUPABASE_URL"] }}';
+            const supabaseKey = '{{ config["SUPABASE_API_KEY"] }}';
+            const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+            // Handle login form submission
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                try {
+                    console.log('Attempting login...');
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) throw error;
+
+                    // Successful login
+                    console.log('Logged in successfully:', data);
+                    window.location.href = '/dashboard';
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('Error logging in: ' + error.message);
+                }
+            });
+        };
     </script>
     <style>
         body {
@@ -112,33 +136,5 @@
             </div>
         </main>
     </div>
-
-    <script>
-        const loginForm = document.getElementById('loginForm');
-
-loginForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    try {
-        const { data: { user }, error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-
-        if (error) throw error;
-
-        if (user) {
-            localStorage.setItem('user', JSON.stringify(user));
-            window.location.href = '/';
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert(error.message);
-    }
-});
-    </script>
 </body>
 </html>
-

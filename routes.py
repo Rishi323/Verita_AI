@@ -12,6 +12,7 @@ import base64
 import dotenv
 from openai import OpenAI
 from flask import Flask, request, jsonify, render_template
+from datetime import datetime
 
 IMAGE_PARSE_PROMPT = """
 You are given different images to digest along with a discussion guide and additional context. Your role is to act as an expert user researcher who is extremely knowledgeable in the world of enterprise software.
@@ -334,15 +335,140 @@ def init_routes(app, socketio):
     def postresearch():
         return render_template('post-research-interview.html')
     
-    @app.route('/login')
+    @app.route('/login', methods=['GET', 'POST'])
     def login():
+        if request.method == 'POST':
+            try:
+                data = request.get_json()
+                email = data.get('email')
+                password = data.get('password')
+
+                if not all([email, password]):
+                    return jsonify({'error': 'Missing email or password'}), 400
+
+                # Get Supabase client from app config
+                supabase = app.config['supabase']
+                
+                # Sign in user with Supabase
+                auth_response = supabase.auth.sign_in_with_password({
+                    'email': email,
+                    'password': password
+                })
+
+                if not auth_response or not auth_response.user:
+                    return jsonify({'error': 'Invalid credentials'}), 401
+
+                # Get user profile
+                profile_response = supabase.from_('user_profiles').select('*').eq('id', auth_response.user.id).execute()
+                
+                if hasattr(profile_response, 'error') and profile_response.error:
+                    logger.error(f"Profile fetch error: {profile_response.error}")
+                    return jsonify({'error': 'Failed to fetch user profile'}), 400
+
+                user_profile = profile_response.data[0] if profile_response.data else None
+
+                return jsonify({
+                    'success': True,
+                    'user': {
+                        'id': auth_response.user.id,
+                        'email': auth_response.user.email,
+                        'type': user_profile.get('user_type') if user_profile else None
+                    }
+                }), 200
+
+            except Exception as e:
+                logger.error(f"Login error: {str(e)}")
+                return jsonify({'error': 'An unexpected error occurred'}), 500
+
+        # GET request - render the login template
         return render_template('login.html')
-    
-    @app.route('/sign-up')
+
+    @app.route('/sign-up', methods=['GET', 'POST'])
     def signup():
+        if request.method == 'POST':
+            try:
+                data = request.get_json()
+                name = data.get('name')
+                email = data.get('email')
+                password = data.get('password')
+                user_type = data.get('userType')
+
+                if not all([name, email, password, user_type]):
+                    return jsonify({'error': 'Missing required fields'}), 400
+
+                # Get Supabase client from app config
+                supabase = app.config['supabase']
+                
+                # Sign up user with Supabase
+                auth_response = supabase.auth.sign_up({
+                    'email': email,
+                    'password': password,
+                    'data': {
+                        'full_name': name
+                    }
+                })
+
+                if not auth_response or not auth_response.user:
+                    return jsonify({'error': 'No user data returned from sign up'}), 400
+
+                try:
+                    # Create user profile with user type
+                    profile_response = supabase.rpc(
+                        'create_user_profile',
+                        {
+                            'user_id': auth_response.user.id,
+                            'user_full_name': name,
+                            'user_email': email,
+                            'user_type': user_type
+                        }
+                    ).execute()
+
+                    if hasattr(profile_response, 'error') and profile_response.error:
+                        logger.error(f"Profile creation error: {profile_response.error}")
+                        # If profile creation fails, we should clean up the auth user
+                        supabase.auth.admin.delete_user(auth_response.user.id)
+                        return jsonify({'error': 'Failed to create user profile'}), 400
+
+                except Exception as profile_error:
+                    logger.error(f"Profile creation error: {str(profile_error)}")
+                    # Clean up auth user if profile creation fails
+                    supabase.auth.admin.delete_user(auth_response.user.id)
+                    return jsonify({'error': 'Failed to create user profile'}), 400
+
+                return jsonify({
+                    'success': True, 
+                    'user': {
+                        'id': auth_response.user.id,
+                        'email': auth_response.user.email,
+                        'type': user_type
+                    }
+                }), 200
+
+            except Exception as e:
+                logger.error(f"Sign-up error: {str(e)}")
+                return jsonify({'error': 'An unexpected error occurred'}), 500
+
+        # GET request - render the sign-up template
         return render_template('sign-up.html')
-    
+
     @app.route('/ab-testing')
     def usabilitytest():
         return render_template('ab-testing.html')
-    
+
+    @app.route('/onboarding/user-type')
+    def onboarding_user_type():
+        return render_template('onboarding/user-type.html')
+
+    @app.route('/onboarding/experience-level')
+    def onboarding_experience_level():
+        return render_template('onboarding/experience-level.html')
+
+    @app.route('/onboarding/goals')
+    def onboarding_goals():
+        return render_template('onboarding/goals.html')
+
+    @app.route('/onboarding/complete')
+    def onboarding_complete():
+        return render_template('onboarding/complete.html')
+
+# ... rest of the code remains the same ...
