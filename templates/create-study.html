@@ -3,429 +3,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Study - Verita AI</title>
+    <title>Create New Study</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#4869E9',
-                        'primary-hover': '#3d5bd8',
-                    }
-                }
-            }
-        }
-    </script>
-    <style type="text/tailwind">
-        @layer utilities {
-            .tab-active {
-                @apply text-primary border-primary;
-            }
-        }
-    </style>
 </head>
-<body class="min-h-screen font-sans bg-gradient-to-br from-blue-50 via-white to-orange-50">
-    <!-- Navigation -->
-    <header class="bg-white/80 backdrop-blur-sm border-b border-gray-200">
-        <nav class="container mx-auto flex justify-between items-center px-4 py-4">
-            <div class="flex items-center">
-                <svg width="37" height="30" viewBox="0 0 37 30" fill="none" xmlns="http://www.w3.org/2000/svg" class="mr-2">
-                    <g clip-path="url(#clip0_9_316)">
-                        <path
-                            d="M0 2.86525V9.6182C0 11.6749 2.50611 12.7719 4.03763 11.3322L11.3471 4.5792C12.9483 3.1052 11.904 0.5 9.71119 0.5H2.40169C1.07902 0.5 0 1.56265 0 2.86525Z"
-                            fill="#4869E9" />
-                        <path
-                            d="M34.5983 0.5H27.2888C25.1308 0.5 24.0517 3.1052 25.6529 4.5792L32.9624 11.3322C34.4939 12.7376 37 11.6749 37 9.6182V2.86525C37 1.56265 35.921 0.5 34.5983 0.5Z"
-                            fill="#4869E9" />
-                        <path
-                            d="M20.1533 15.3002L32.9624 27.1608C34.4939 28.5662 37 27.5035 37 25.4468V18.6253C37 17.974 36.7215 17.357 36.2342 16.9113L20.1533 2C19.2135 1.14303 17.7865 1.14303 16.8467 2L0.765757 16.9113C0.278457 17.357 0 17.974 0 18.6253V25.4468C0 27.5035 2.50611 28.6005 4.03763 27.1608L16.8467 15.3002C17.7865 14.4433 19.2135 14.4433 20.1533 15.3002Z"
-                            fill="#4869E9" />
-                    </g>
-                    <defs>
-                        <clipPath id="clip0_9_316">
-                            <rect width="37" height="29" fill="white" transform="translate(0 0.5)" />
-                        </clipPath>
-                    </defs>
-                </svg>
-                <span class="text-[#4869E9] text-2xl font-bold">Verita AI</span>
-            </div>
-            <div class="space-x-4">
-                <a href="/" class="text-gray-600">Home</a>
-                <a href="/features" class="text-gray-600">Features</a>
-                <a href="/pricing" class="text-gray-600">Pricing</a>
-                <a href="/resources" class="text-gray-600">Resources</a>
-                <a href="/dashboard" class="text-gray-600">Dashboard</a>
-                <a href="#" class="bg-gradient-to-r from-[#4869E9] to-[#3d5bd8] text-white px-4 py-2 rounded-full font-semibold hover:from-[#3d5bd8] hover:to-[#2f4ec7] transition-all duration-300">Sign Up</a>
-            </div>
-        </nav>
-    </header>
-
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Create New Study</h1>
-                <p class="text-gray-600">Set up your research study with AI assistance</p>
-            </div>
-            <button class="bg-gradient-to-r from-[#4869E9] to-[#3d5bd8] text-white px-6 py-2 rounded-lg font-semibold hover:from-[#3d5bd8] hover:to-[#2f4ec7] transition-all duration-300">
-                Save Draft
+<body class="bg-gray-100">
+    <header class="w-full py-4 px-4 md:px-6 bg-white border-b">
+        <div class="container mx-auto flex items-center justify-between">
+            <a href="/" class="flex items-center space-x-2">
+                <div class="font-bold text-2xl bg-gradient-to-r from-blue-600 via-blue-500 to-orange-500 text-transparent bg-clip-text">
+                    Verita AI
+                </div>
+            </a>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="/voice-agent" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    Try our demo
+                </a>
+                <a href="/features" class="text-sm font-medium text-gray-600 hover:text-gray-900">
+                    Features
+                </a>
+                <a href="/ab-testing" class="text-sm font-medium text-gray-600 hover:text-gray-900">
+                    Usability Testing
+                </a>
+                <a href="/login" class="text-sm font-medium text-gray-600 hover:text-gray-900">
+                    Login
+                </a>
+            </nav>
+            <button class="md:hidden inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                <i data-lucide="menu" class="h-6 w-6"></i>
             </button>
         </div>
-
-        <!-- Tabs -->
-        <div class="mb-8 border-b border-gray-200">
-            <nav class="flex space-x-8" aria-label="Tabs">
-                <button class="tab-button px-4 py-2 border-b-2 font-medium text-sm tab-active" data-tab="guide">
-                    Discussion Guide
-                </button>
-                <button class="tab-button px-4 py-2 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="edit">
-                    Edit Guide
-                </button>
-                <button class="tab-button px-4 py-2 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="logistics">
-                    Logistics
-                </button>
-                <button class="tab-button px-4 py-2 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="stimuli">
-                    Stimuli
-                </button>
-                <button class="tab-button px-4 py-2 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="ai-interview">
-                    AI Interview
-                </button>
-            </nav>
+    </header>
+    <div class="flex flex-col gap-6 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-semibold">Create New Study</h1>
+                <p class="text-sm text-gray-500">
+                    Set up your research study with AI assistance
+                </p>
+            </div>
+            <button class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save Draft</button>
         </div>
 
-        <!-- Tab Content -->
-        <div class="tab-content" id="guide-content">
-            <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
-                <div class="flex items-center gap-2 mb-4">
-                    <i data-lucide="brain" class="h-5 w-5 text-gray-700"></i>
-                    <h2 class="text-xl font-bold">AI-Generated Discussion Guide</h2>
-                </div>
-
-                <div class="space-y-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Topic of the Study</label>
-                        <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                            placeholder="E.g., User experience of our mobile app">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Research Framework</label>
-                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent">
-                            <option value="">Select a framework</option>
-                            <option value="thematic">Thematic Analysis</option>
-                            <option value="grounded">Grounded Theory</option>
-                            <option value="phenomenological">Phenomenological</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Interview Setting</label>
-                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent">
-                            <option value="">Select a setting</option>
-                            <option value="in-person">In-person</option>
-                            <option value="video-call">Video Call</option>
-                            <option value="phone">Phone</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Interview Type</label>
-                        <select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent">
-                            <option value="">Select interview type</option>
-                            <option value="ai-moderated">AI-Moderated</option>
-                            <option value="ux-researcher">UX Researcher Conducted</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Interview Length (minutes)</label>
-                        <input type="range" min="15" max="120" step="15" value="60"
-                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
-                        <div class="flex justify-between text-xs text-gray-500 mt-1">
-                            <span>15</span>
-                            <span>120</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Interview Topics to Focus On</label>
-                        <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                            placeholder="E.g., Onboarding experience, Feature usability, Overall satisfaction">
-                    </div>
-
-                    <button class="w-full bg-gradient-to-r from-[#4869E9] to-[#3d5bd8] text-white px-4 py-2 rounded-lg font-semibold hover:from-[#3d5bd8] hover:to-[#2f4ec7] transition-all duration-300 flex items-center justify-center gap-2">
-                        <i data-lucide="message-square" class="h-4 w-4"></i>
-                        Generate Discussion Guide
+        <div class="bg-white rounded-lg shadow">
+            <div class="border-b border-gray-200">
+                <nav class="flex" aria-label="Tabs">
+                    <button class="px-4 py-2 text-sm font-medium text-blue-600 border-b-2 border-blue-500" aria-current="page">
+                        Logistics
                     </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content hidden" id="edit-content">
-            <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
-                <div class="flex items-center gap-2 mb-4">
-                    <i data-lucide="edit" class="h-5 w-5 text-gray-700"></i>
-                    <h2 class="text-xl font-bold">Edit Discussion Guide</h2>
-                </div>
-
-                <div class="space-y-6" id="question-list">
-                    <!-- Questions will be dynamically added here -->
-                </div>
-
-                <button id="add-topic" class="mt-4 w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center gap-2">
-                    <i data-lucide="plus" class="h-4 w-4"></i>
-                    Add New Topic
-                </button>
-            </div>
-        </div>
-
-        <div class="tab-content hidden" id="logistics-content">
-            <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6 space-y-8">
-                <div>
-                    <h2 class="text-xl font-bold mb-4">Demographics</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Age Range</label>
-                            <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                                placeholder="E.g., 25-40">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                            <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                                placeholder="E.g., United States">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Race/Ethnicity</label>
-                            <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                                placeholder="E.g., All">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Income Range</label>
-                            <input type="text" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                                placeholder="E.g., $50,000-$100,000">
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <h2 class="text-xl font-bold mb-4">Compensation</h2>
-                    <div class="flex items-center space-x-4">
-                        <input type="number" class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                            placeholder="Amount">
-                        <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent">
-                            <option value="cash">Cash</option>
-                            <option value="gift-card">Gift Card</option>
-                            <option value="product">Product</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <h2 class="text-xl font-bold mb-4">Email Template</h2>
-                    <textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent" rows="5"
-                        placeholder="Enter your email template for participants here..."></textarea>
-                    <div class="flex space-x-4 mt-4">
-                        <button class="flex-1 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center gap-2">
-                            <i data-lucide="mail" class="h-4 w-4"></i>
-                            Send via Outlook
-                        </button>
-                        <button class="flex-1 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center gap-2">
-                            <i data-lucide="mail" class="h-4 w-4"></i>
-                            Send via Gmail
-                        </button>
-                    </div>
-                </div>
-
-                <div>
-                    <h2 class="text-xl font-bold mb-4">Screener</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Screener Call Duration (minutes)</label>
-                            <input type="number" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                                value="15">
-                        </div>
-                        <div id="screener-questions">
-                            <!-- Screener questions will be dynamically added here -->
-                        </div>
-                        <button id="add-screener-question" class="w-full bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center gap-2">
-                            <i data-lucide="plus" class="h-4 w-4"></i>
-                            Add Screener Question
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-content hidden" id="stimuli-content">
-            <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
-                <div class="flex items-center gap-2 mb-4">
-                    <i data-lucide="image" class="h-5 w-5 text-gray-700"></i>
-                    <h2 class="text-xl font-bold">Upload Stimuli</h2>
-                </div>
-
-                <div class="border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
-                    <i data-lucide="upload-cloud" class="h-12 w-12 text-gray-400 mx-auto mb-4"></i>
-                    <p class="text-gray-500 mb-4">Drag and drop or click to upload designs, prototypes, or other materials</p>
-                    <button class="bg-gradient-to-r from-[#4869E9] to-[#3d5bd8] text-white px-6 py-2 rounded-lg font-semibold hover:from-[#3d5bd8] hover:to-[#2f4ec7] transition-all duration-300">
-                        Upload Files
+                    <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Discussion Guide
                     </button>
+                    <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Edit Guide
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        Stimuli
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">
+                        AI Interview
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-6 space-y-6">
+                <!-- Study Participants Card -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Study Participants</h3>
+                    </div>
+                    <div class="px-4 py-5 sm:p-6 space-y-4">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div class="space-y-2">
+                                <label for="users-to-screen" class="block text-sm font-medium text-gray-700">Users to Screen</label>
+                                <input type="number" id="users-to-screen" placeholder="E.g., 100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            </div>
+                            <div class="space-y-2">
+                                <label for="users-to-interview" class="block text-sm font-medium text-gray-700">Users to Interview</label>
+                                <input type="number" id="users-to-interview" placeholder="E.g., 10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">User Source</label>
+                            <div class="space-y-2">
+                                <div class="flex items-center">
+                                    <input id="company" name="user-source" type="radio" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                    <label for="company" class="ml-3 block text-sm font-medium text-gray-700">Company Upload</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="verita" name="user-source" type="radio" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300" checked>
+                                    <label for="verita" class="ml-3 block text-sm font-medium text-gray-700">Verita's Database</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input id="blend" name="user-source" type="radio" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                                    <label for="blend" class="ml-3 block text-sm font-medium text-gray-700">Blend of Both</label>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <i data-lucide="upload" class="h-5 w-5 mr-2"></i>
+                            Upload User List
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Demographics Card -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Demographics</h3>
+                    </div>
+                    <div class="px-4 py-5 sm:p-6 space-y-4">
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                            <div class="space-y-2">
+                                <label for="age-range" class="block text-sm font-medium text-gray-700">Age Range</label>
+                                <input type="text" id="age-range" placeholder="E.g., 25-40" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            </div>
+                            <div class="space-y-2">
+                                <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                                <input type="text" id="location" placeholder="E.g., United States" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            </div>
+                            <div class="space-y-2">
+                                <label for="race" class="block text-sm font-medium text-gray-700">Race/Ethnicity</label>
+                                <input type="text" id="race" placeholder="E.g., All" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            </div>
+                            <div class="space-y-2">
+                                <label for="income" class="block text-sm font-medium text-gray-700">Income Range</label>
+                                <input type="text" id="income" placeholder="E.g., $50,000-$100,000" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            </div>
+                        </div>
+                        <button class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Add More Demographics
+                            <i data-lucide="chevron-down" class="ml-2 h-4 w-4"></i>
+                        </button>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="in-person" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <label for="in-person" class="text-sm text-gray-700">In-person interviews</label>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Demographic Statistics</label>
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                <div class="bg-white overflow-hidden shadow rounded-lg">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <div class="text-sm font-medium text-gray-500 truncate">Age Distribution</div>
+                                        <div class="mt-1 text-3xl font-semibold text-gray-900">50/50</div>
+                                        <div class="text-sm text-gray-500">25-34 / 35-44</div>
+                                        <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 50%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white overflow-hidden shadow rounded-lg">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <div class="text-sm font-medium text-gray-500 truncate">Gender Ratio</div>
+                                        <div class="mt-1 text-3xl font-semibold text-gray-900">1:1</div>
+                                        <div class="text-sm text-gray-500">Male / Female</div>
+                                        <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 50%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white overflow-hidden shadow rounded-lg">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <div class="text-sm font-medium text-gray-500 truncate">Income Level</div>
+                                        <div class="mt-1 text-3xl font-semibold text-gray-900">50/50</div>
+                                        <div class="text-sm text-gray-500">Medium / High</div>
+                                        <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 50%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compensation Card -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 flex items-center">
+                            <i data-lucide="dollar-sign" class="h-5 w-5 mr-2"></i>
+                            Compensation
+                        </h3>
+                    </div>
+                    <div class="px-4 py-5 sm:p-6 space-y-4">
+                        <div class="flex items-center space-x-2">
+                            <input type="number" id="compensation" placeholder="Amount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <select id="compensation-type" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option>Type</option>
+                                <option>Cash</option>
+                                <option>Gift Card</option>
+                                <option>Product</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Email Template Card -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 flex items-center">
+                            <i data-lucide="mail" class="h-5 w-5 mr-2"></i>
+                            Email Template
+                        </h3>
+                    </div>
+                    <div class="px-4 py-5 sm:p-6 space-y-4">
+                        <textarea placeholder="Enter your email template for participants here..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50" rows="6"></textarea>
+                        <div class="flex space-x-2">
+                            <button class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i data-lucide="mail" class="mr-2 h-4 w-4"></i>
+                                Send via Outlook
+                            </button>
+                            <button class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i data-lucide="mail" class="mr-2 h-4 w-4"></i>
+                                Send via Gmail
+                            </button>
+                            <button class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i data-lucide="mail" class="mr-2 h-4 w-4"></i>
+                                Send via Yahoo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Screener Card -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Screener</h3>
+                    </div>
+                    <div class="px-4 py-5 sm:p-6 space-y-4">
+                        <div class="space-y-2">
+                            <label for="screener-duration" class="block text-sm font-medium text-gray-700">Screener Call Duration (minutes)</label>
+                            <input type="number" id="screener-duration" value="15" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Screener Questions</label>
+                            <input type="text" value="How frequently do you use our product?" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <input type="text" value="What is your primary use case for our product?" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <button class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                <i data-lucide="plus" class="mr-2 h-4 w-4"></i>
+                                Add Screener Question
+                            </button>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Screened Users</label>
+                            <div class="border rounded-md p-2 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span>John Doe - 28 years old, Male, Medium income</span>
+                                    <button class="text-sm text-blue-600 hover:text-blue-500">Select</button>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span>Jane Smith - 35 years old, Female, High income</span>
+                                    <button class="text-sm text-blue-600 hover:text-blue-500">Select</button>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span>Alex Johnson - 22 years old, Non-binary, Low income</span>
+                                    <button class="text-sm text-blue-600 hover:text-blue-500">Select</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Final Users for Interview</label>
+                            <div class="border rounded-md p-2 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span>John Doe - 28 years old, Male, Medium income</span>
+                                    <button class="text-sm text-blue-600 hover:text-blue-500">Remove</button>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span>Jane Smith - 35 years old, Female, High income</span>
+                                    <button class="text-sm text-blue-600 hover:text-blue-500">Remove</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-medium text-gray-700">Demographic Statistics</label>
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                                <div class="bg-white overflow-hidden shadow rounded-lg">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <div class="text-sm font-medium text-gray-500 truncate">Age Distribution</div>
+                                        <div class="mt-1 text-3xl font-semibold text-gray-900">50/50</div>
+                                        <div class="text-sm text-gray-500">25-34 / 35-44</div>
+                                        <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 50%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white overflow-hidden shadow rounded-lg">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <div class="text-sm font-medium text-gray-500 truncate">Gender Ratio</div>
+                                        <div class="mt-1 text-3xl font-semibold text-gray-900">1:1</div>
+                                        <div class="text-sm text-gray-500">Male / Female</div>
+                                        <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 50%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-white overflow-hidden shadow rounded-lg">
+                                    <div class="px-4 py-5 sm:p-6">
+                                        <div class="text-sm font-medium text-gray-500 truncate">Income Level</div>
+                                        <div class="mt-1 text-3xl font-semibold text-gray-900">50/50</div>
+                                        <div class="text-sm text-gray-500">Medium / High</div>
+                                        <div class="mt-4 w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: 50%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Settings Card -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-4 py-5 sm:px-6">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Interview Settings</h3>
+                    </div>
+                    <div class="px-4 py-5 sm:p-6 space-y-4">
+                        <div class="space-y-2">
+                            <label for="interview-language" class="block text-sm font-medium text-gray-700">Interview Language</label>
+                            <select id="interview-language" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                                <option>Select language</option>
+                                <option>English</option>
+                                <option>Spanish</option>
+                                <option>French</option>
+                                <option>German</option>
+                                <option>Chinese</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" id="screen-record" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <label for="screen-record" class="text-sm text-gray-700">Screen record the interview</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="tab-content hidden" id="ai-interview-content">
-            <div class="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-6">
-                <div class="flex items-center gap-2 mb-4">
-                    <i data-lucide="mic" class="h-5 w-5 text-gray-700"></i>
-                    <h2 class="text-xl font-bold">AI Interview Demo</h2>
-                </div>
-
-                <p class="text-gray-600 mb-4">This demo simulates how the AI voice chatbot will conduct the interview using the generated questions.</p>
-
-                <div class="border rounded-lg p-4 space-y-4 mb-6">
-                    <p class="font-semibold">AI: Hello, thank you for participating in our study. Let's begin with the first question.</p>
-                    <div class="pl-4 border-l-2 border-gray-200">
-                        <p class="font-semibold">AI: What's your experience with our product?</p>
-                        <p class="text-gray-500 italic">User response will be recorded here...</p>
-                    </div>
-                    <div class="pl-4 border-l-2 border-gray-200">
-                        <p class="font-semibold">AI: How often do you use similar products?</p>
-                        <p class="text-gray-500 italic">User response will be recorded here...</p>
-                    </div>
-                    <div class="pl-4 border-l-2 border-gray-200">
-                        <p class="font-semibold">AI: What features would you like to see improved?</p>
-                        <p class="text-gray-500 italic">User response will be recorded here...</p>
-                    </div>
-                    <p class="font-semibold">AI: Thank you for your time and insights. Do you have any questions for me?</p>
-                </div>
-
-                <button class="w-full bg-gradient-to-r from-[#4869E9] to-[#3d5bd8] text-white px-4 py-2 rounded-lg font-semibold hover:from-[#3d5bd8] hover:to-[#2f4ec7] transition-all duration-300 flex items-center justify-center gap-2">
-                    <i data-lucide="play" class="h-4 w-4"></i>
-                    Start AI Interview Demo
-                </button>
-            </div>
-        </div>
-    </main>
+    </div>
 
     <script>
-        // Initialize Lucide icons
         lucide.createIcons();
-
-        // Tab functionality
-        const tabButtons = document.querySelectorAll('.tab-button');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        tabButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Remove active classes
-                tabButtons.forEach(btn => {
-                    btn.classList.remove('tab-active');
-                    btn.classList.add('text-gray-500', 'border-transparent');
-                });
-
-                // Add active class to clicked button
-                button.classList.add('tab-active');
-                button.classList.remove('text-gray-500', 'border-transparent');
-
-                // Show corresponding content
-                const tabName = button.getAttribute('data-tab');
-                tabContents.forEach(content => {
-                    content.style.display = content.id === `${tabName}-content` ? 'block' : 'none';
-                });
-            });
-        });
-
-        // Mobile menu functionality
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
-        });
-
-        // Edit Guide functionality
-        const questionList = document.getElementById('question-list');
-        const addTopicButton = document.getElementById('add-topic');
-
-        let topicCounter = 1;
-        let questionCounter = 1;
-
-        function addTopic() {
-            const topicId = `topic-${topicCounter}`;
-            const topicHtml = `
-                <div id="${topicId}" class="mb-6">
-                    <h3 class="text-lg font-semibold mb-2">Topic ${topicCounter}</h3>
-                    <div class="space-y-2 questions"></div>
-                    <button class="add-question mt-2 bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition flex items-center justify-center gap-2">
-                        <i data-lucide="plus" class="h-4 w-4"></i>
-                        Add Question to Topic ${topicCounter}
-                    </button>
-                </div>
-            `;
-            questionList.insertAdjacentHTML('beforeend', topicHtml);
-
-            const addQuestionButton = document.querySelector(`#${topicId} .add-question`);
-            addQuestionButton.addEventListener('click', () => addQuestion(topicId));
-
-            addQuestion(topicId);
-            topicCounter++;
-            lucide.createIcons();
-        }
-
-        function addQuestion(topicId) {
-            const questionsContainer = document.querySelector(`#${topicId} .questions`);
-            const questionHtml = `
-                <div class="flex items-center space-x-2">
-                    <i data-lucide="grip-vertical" class="h-5 w-5 text-gray-400 cursor-move"></i>
-                    <input type="text" class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                        placeholder="Enter your question here">
-                    <button class="text-gray-400 hover:text-yellow-500">
-                        <i data-lucide="star" class="h-5 w-5"></i>
-                    </button>
-                    <button class="text-gray-400 hover:text-red-500">
-                        <i data-lucide="trash-2" class="h-5 w-5"></i>
-                    </button>
-                </div>
-            `;
-            questionsContainer.insertAdjacentHTML('beforeend', questionHtml);
-            questionCounter++;
-            lucide.createIcons();
-        }
-
-        addTopicButton.addEventListener('click', addTopic);
-
-        // Add initial topic
-        addTopic();
-
-        // Screener functionality
-        const screenerQuestions = document.getElementById('screener-questions');
-        const addScreenerQuestionButton = document.getElementById('add-screener-question');
-
-        function addScreenerQuestion() {
-            const questionHtml = `
-                <div class="flex items-center space-x-2 mb-2">
-                    <input type="text" class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4869E9] focus:border-transparent"
-                        placeholder="Enter screener question">
-                    <button class="text-gray-400 hover:text-red-500">
-                        <i data-lucide="trash-2" class="h-5 w-5"></i>
-                    </button>
-                </div>
-            `;
-            screenerQuestions.insertAdjacentHTML('beforeend', questionHtml);
-            lucide.createIcons();
-        }
-
-        addScreenerQuestionButton.addEventListener('click', addScreenerQuestion);
-
-        // Add initial screener questions
-        addScreenerQuestion();
-        addScreenerQuestion();
     </script>
 </body>
 </html>

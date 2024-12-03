@@ -23,6 +23,7 @@ from datetime import datetime, timedelta
 from cachetools import TTLCache
 import openai
 from openai import RateLimitError, APIError
+from replit import db as kv
 
 IMAGE_PARSE_PROMPT = """
 You are given different images to digest along with a discussion guide and additional context. Your role is to act as an expert user researcher who is extremely knowledgeable in the world of enterprise software.
@@ -338,6 +339,14 @@ def init_routes(app, socketio):
     @app.route('/create-study', methods=['GET'])
     def create_study():
         return render_template('create-study.html')
+    
+    @app.route('/api/create-study')
+    def create_study_api():
+        # Parse form data into JSON
+        p_json = request.form.to_dict(flat=False)
+
+        # kv['studies'] should cointain a dict of all the studies where the keys are study IDs
+        kv['studies']['STUDY_ID'] = p_json
     
     @app.route('/fine-tune', methods=['POST'])
     def fine_tune():
