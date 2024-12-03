@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Usability Testing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .upload-area {
+            border: 2px dashed #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: rgb(37, 99, 235);
+        }
+        .progress-bar {
+            height: 4px;
+            background-color: #f3f4f6;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #000;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-blue-600 text-white fixed h-full">
+            <div class="p-6">
+                <a href="/" class="block mb-8">
+                    <h1 class="text-2xl font-bold text-white">Verita AI</h1>
+                </a>
+                <nav>
+                    <ul class="space-y-4">
+                        <li>
+                            <button onclick="switchTab('setup')" class="tab-btn flex items-center space-x-3 w-full px-4 py-2 rounded hover:bg-blue-700 transition-colors" data-tab="setup">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                    <path d="M4 6h16M4 12h16m-16 6h16" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span>Test Setup</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="switchTab('monitoring')" class="tab-btn flex items-center space-x-3 w-full px-4 py-2 rounded hover:bg-blue-700 transition-colors" data-tab="monitoring">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span>Monitoring</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button onclick="switchTab('results')" class="tab-btn flex items-center space-x-3 w-full px-4 py-2 rounded hover:bg-blue-700 transition-colors" data-tab="results">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                    <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" stroke="currentColor" stroke-width="2"/>
+                                </svg>
+                                <span>Results</span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 ml-64">
+            <!-- Header -->
+            <header class="bg-white shadow-sm p-4 fixed w-[calc(100%-16rem)] z-10">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-bold">AI-Powered Usability Testing</h1>
+                    <div class="flex items-center space-x-4">
+                        <button class="p-2 rounded-full hover:bg-gray-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                        </button>
+                        <button class="p-2 rounded-full hover:bg-gray-100">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </button>
+                        <div class="w-8 h-8 bg-gray-200 rounded-full"></div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="pt-20 p-8">
+                <div id="content-area" class="max-w-4xl mx-auto">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTestId = null;
+        let analysisInProgress = false;
+        let retryCount = 0;
+        const MAX_RETRIES = 3;
+        
+        // Metric tracking functions
+        async function trackVariantView(testId, variant) {
+            try {
+                const response = await fetch(`/api/ab-test/${testId}/track`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'view',
+                        variant: variant
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to track view');
+            } catch (error) {
+                console.error('Error tracking view:', error);
+            }
+        }
+
+        async function trackVariantClick(testId, variant) {
+            try {
+                const response = await fetch(`/api/ab-test/${testId}/track`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'click',
+                        variant: variant
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to track click');
+            } catch (error) {
+                console.error('Error tracking click:', error);
+            }
+        }
+
+        async function createABTest() {
+            const form = document.getElementById('abTestForm');
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/api/ab-test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: formData.get('name'),
+                        description: formData.get('description'),
+                        traffic_split: parseInt(formData.get('traffic_split'))
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to create test');
+                
+                const data = await response.json();
+                currentTestId = data.id;
+                
+                // Enable variant upload
+                document.querySelectorAll('.variant-upload').forEach(el => el.disabled = false);
+                
+                return data;
+            } catch (error) {
+                console.error('Error creating test:', error);
+                alert('Failed to create test');
+            }
+        }
+
+        async function uploadVariant(type, file) {
+            if (!currentTestId) {
+                alert('Please create a test first');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', type);
+            
+            try {
+                const response = await fetch(`/api/ab-test/${currentTestId}/variant`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Failed to upload variant');
+                
+                const data = await response.json();
+                document.querySelector(`#variant${type}Preview`).src = data.url;
+                
+                return data;
+            } catch (error) {
+                console.error('Error uploading variant:', error);
+                alert('Failed to upload variant');
+            }
+        }
+
+        async function fetchTestData() {
+            if (!currentTestId) return;
+            
+            try {
+                const response = await fetch(`/api/ab-test/${currentTestId}/metrics`);
+                if (!response.ok) throw new Error('Failed to fetch metrics');
+                
+                const data = await response.json();
+                updateMonitoringStats(data);
+                updateStatsChart(data);
+            } catch (error) {
+                console.error('Error fetching test data:', error);
+            }
+        }
+
+        function updateMonitoringStats(data) {
+            for (const variant of ['A', 'B']) {
+                const metrics = data[variant];
+                document.querySelector(`#variant${variant}Views`).textContent = metrics.views;
+                document.querySelector(`#variant${variant}Clicks`).textContent = metrics.clicks;
+                document.querySelector(`#variant${variant}CTR`).textContent = `${metrics.ctr}%`;
+            }
+        }
+
+        function updateStatsChart(data) {
+            const ctx = document.getElementById('metricsChart').getContext('2d');
+            
+            if (window.metricsChart) {
+                window.metricsChart.destroy();
+            }
+            
+            window.metricsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Views', 'Clicks', 'CTR (%)'],
+                    datasets: [
+                        {
+                            label: 'Variant A',
+                            data: [
+                                data.A.views,
+                                data.A.clicks,
+                                data.A.ctr
+                            ],
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)'
+                        },
+                        {
+                            label: 'Variant B',
+                            data: [
+                                data.B.views,
+                                data.B.clicks,
+                                data.B.ctr
+                            ],
+                            backgroundColor: 'rgba(239, 68, 68, 0.5)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize metrics polling
+        setInterval(fetchTestData, 5000); // Update every 5 seconds
+
+        // Add notification functions
+        function showNotification(message, type = 'error', duration = 5000) {
+            const notifDiv = document.createElement('div');
+            const bgColor = type === 'error' ? 'bg-red-100 border-red-500 text-red-700' : 
+                           type === 'warning' ? 'bg-yellow-100 border-yellow-500 text-yellow-700' :
+                           'bg-blue-100 border-blue-500 text-blue-700';
+            
+            notifDiv.className = `fixed top-4 right-4 ${bgColor} border-l-4 p-4 rounded shadow-lg`;
+            notifDiv.innerHTML = `
+                <div class="flex items-center">
+                    <div class="py-1">
+                        <svg class="h-6 w-6 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            ${type === 'error' ? 
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 0v4m0-4h4m-4 0H8"/>' :
+                                type === 'warning' ?
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>' :
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+                            }
+                        </svg>
+                    </div>
+                    <div>${message}</div>
+                </div>
+            `;
+            document.body.appendChild(notifDiv);
+            setTimeout(() => notifDiv.remove(), duration);
+        }
+
+        async function analyzeTest() {
+            if (!currentTestId || analysisInProgress) return;
+            
+            try {
+                analysisInProgress = true;
+                const analyzeButton = document.getElementById('analyzeButton');
+                analyzeButton.disabled = true;
+                analyzeButton.innerHTML = '<span class="animate-pulse">Analyzing...</span>';
+                
+                const response = await fetch(`/api/ab-test/${currentTestId}/analyze`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (response.status === 429) {
+                        showNotification('Rate limit exceeded. Using statistical analysis instead.', 'warning');
+                    } else {
+                        showNotification(errorData.message || 'Failed to analyze variants', 'error');
+                        return;
+                    }
+                }
+                
+                const data = await response.json();
+                
+                // Update the recommendations section
+                const recommendationsContent = document.getElementById('recommendations-content');
+                recommendationsContent.innerHTML = `
+                    <div class="prose">
+                        <h4 class="text-lg font-semibold mb-2">Analysis Results</h4>
+                        <div class="whitespace-pre-wrap">${data.analysis}</div>
+                        ${data.cached ? '<div class="text-sm text-gray-500 mt-2">(Cached analysis)</div>' : ''}
+                    </div>
+                `;
+                
+                // Switch to results tab
+                switchTab('results');
+                
+            } catch (error) {
+                showNotification('An error occurred while analyzing the variants', 'error');
+                console.error('Analysis error:', error);
+            } finally {
+                analysisInProgress = false;
+                const analyzeButton = document.getElementById('analyzeButton');
+                analyzeButton.disabled = false;
+                analyzeButton.innerHTML = 'Analyze Variants';
+            }
+        }
+
+        // Content templates
+        const templates = {
+            setup: `
+                <h2 class="text-2xl font-bold mb-6">Create A/B Test</h2>
+                <form id="abTestForm" class="bg-white rounded-lg shadow p-6 space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Test Name</label>
+                        <input type="text" id="testName" class="w-full p-2 border rounded" placeholder="Enter test name">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Test Description</label>
+                        <textarea id="testDescription" class="w-full p-2 border rounded" rows="3" placeholder="Enter test description"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Variant A -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Variant A</label>
+                            <div class="upload-area p-4 text-center cursor-pointer relative">
+                                <input type="file" 
+                                    accept="image/*" 
+                                    onchange="handleFileUpload(event, 'A')" 
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    aria-label="Upload Variant A">
+                                <div class="space-y-2">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                    </svg>
+                                    <div class="text-sm text-gray-600">Click to upload or drag and drop</div>
+                                    <div class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</div>
+                                </div>
+                                <img id="variantAPreview" class="mt-4 max-w-full h-auto hidden rounded-lg" alt="Variant A Preview">
+                            </div>
+                        </div>
+                        <!-- Variant B -->
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Variant B</label>
+                            <div class="upload-area p-4 text-center cursor-pointer relative">
+                                <input type="file" 
+                                    accept="image/*" 
+                                    onchange="handleFileUpload(event, 'B')" 
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    aria-label="Upload Variant B">
+                                <div class="space-y-2">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                    </svg>
+                                    <div class="text-sm text-gray-600">Click to upload or drag and drop</div>
+                                    <div class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</div>
+                                </div>
+                                <img id="variantBPreview" class="mt-4 max-w-full h-auto hidden rounded-lg" alt="Variant B Preview">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Traffic Split</label>
+                        <input type="range" id="trafficSplit" class="w-full" min="0" max="100" value="50" oninput="updateTrafficSplit(event)">
+                        <div class="flex justify-between text-sm text-gray-600 mt-1">
+                            <span id="variantASplit">50%</span>
+                            <span id="variantBSplit">50%</span>
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Create Test</button>
+                </form>
+            `,
+            monitoring: `
+                <h2 class="text-2xl font-bold mb-6">Test Monitoring</h2>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <!-- Variant A -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">Variant A</h3>
+                            <img id="variantAPreview" class="w-full h-48 object-cover rounded mb-4" src="" alt="Variant A">
+                            <div class="stats">
+                                <p>Views: <span id="variantAViews">0</span></p>
+                                <p>Clicks: <span id="variantAClicks">0</span></p>
+                                <p>CTR: <span id="variantACTR">0%</span></p>
+                            </div>
+                        </div>
+                        <!-- Variant B -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">Variant B</h3>
+                            <img id="variantBPreview" class="w-full h-48 object-cover rounded mb-4" src="" alt="Variant B">
+                            <div class="stats">
+                                <p>Views: <span id="variantBViews">0</span></p>
+                                <p>Clicks: <span id="variantBClicks">0</span></p>
+                                <p>CTR: <span id="variantBCTR">0%</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <button onclick="fetchTestData()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            Refresh Metrics
+                        </button>
+                        <div class="text-sm text-gray-600">
+                            Last updated: <span id="lastUpdated">Never</span>
+                        </div>
+                    </div>
+                </div>
+            `,
+            results: `
+                <h2 class="text-2xl font-bold mb-6">Test Results</h2>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div id="testResults" class="space-y-6">
+                        <!-- Results will be populated dynamically -->
+                    </div>
+                    <div id="aiRecommendations" class="mt-8">
+                        <h3 class="text-lg font-semibold mb-4">AI Recommendations</h3>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div id="recommendations-content" class="prose">
+                                <!-- AI recommendations will be populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        };
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTab('setup');
+            initializeEventListeners();
+        });
+
+        function initializeEventListeners() {
+            const trafficSplit = document.getElementById('trafficSplit');
+            if (trafficSplit) {
+                trafficSplit.addEventListener('input', updateTrafficSplit);
+            }
+        }
+
+        function handleFileUpload(event, variantType) {
+            const file = event.target.files[0];
+            if (file) {
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewElement = document.getElementById(`variant${variantType}Preview`);
+                    if (previewElement) {
+                        previewElement.src = e.target.result;
+                        previewElement.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
+                
+                // Upload the file
+                uploadVariant(variantType, file);
+            }
+        }
+
+        function updateTrafficSplit(event) {
+            const value = event.target.value;
+            document.getElementById('variantASplit').textContent = `Variant A: ${value}%`;
+            document.getElementById('variantBSplit').textContent = `Variant B: ${100 - value}%`;
+        }
+
+        function switchTab(tabName) {
+            // Update active tab styling
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add('bg-blue-700');
+                } else {
+                    btn.classList.remove('bg-blue-700');
+                }
+            });
+
+            // Update content
+            document.querySelector('#content-area').innerHTML = templates[tabName];
+
+            // Initialize tab-specific functionality
+            if (tabName === 'monitoring' || tabName === 'results') {
+                fetchTestData();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in - Verita AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+    <script>
+        window.onload = function() {
+            // Initialize the Supabase client
+            const supabaseUrl = '{{ config["SUPABASE_URL"] }}';
+            const supabaseKey = '{{ config["SUPABASE_API_KEY"] }}';
+            const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+            // Handle login form submission
+            document.getElementById('loginForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                
+                try {
+                    console.log('Attempting login...');
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+
+                    if (error) throw error;
+
+                    // Successful login
+                    console.log('Logged in successfully:', data);
+                    window.location.href = '/dashboard';
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('Error logging in: ' + error.message);
+                }
+            });
+        };
+    </script>
+    <style>
+        body {
+            background: linear-gradient(to bottom, rgba(239, 246, 255, 0.5), rgba(254, 242, 242, 0.5));
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            color: #374151;
+            background-color: #fff;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #2563EB;
+            ring: 1px #2563EB;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div class="container mx-auto px-4">
+        <header class="flex justify-between items-center py-6">
+            <a href="/" class="flex items-center space-x-2">
+                <img src="/logo.svg" alt="Verita AI" width="100" height="24" />
+            </a>
+            <nav>
+                <a href="/sign-up" class="text-sm text-gray-600 hover:text-gray-900">
+                    Sign up
+                </a>
+            </nav>
+        </header>
+
+        <main class="flex justify-center items-center min-h-[calc(100vh-80px)]">
+            <div class="w-full max-w-md space-y-8">
+                <div class="text-center">
+                    <h1 class="text-2xl font-semibold tracking-tight">Log in to Verita AI</h1>
+                    <p class="mt-2 text-sm text-gray-600">
+                        Welcome back! Please enter your details
+                    </p>
+                </div>
+
+                <div class="bg-white shadow-sm rounded-lg p-6 space-y-4">
+                    <form id="loginForm" class="space-y-4">
+                        <div class="space-y-2">
+                            <label for="email" class="form-label">Email</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                                class="form-input"
+                                placeholder="Enter your email"
+                            />
+                        </div>
+                        <div class="space-y-2">
+                            <label for="password" class="form-label">Password</label>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                                class="form-input"
+                                placeholder="Enter your password"
+                            />
+                        </div>
+                        <div class="flex items-center justify-end">
+                            <a href="/forgot-password" class="text-sm text-blue-600 hover:text-blue-500">
+                                Forgot password?
+                            </a>
+                        </div>
+                        <button
+                            type="submit"
+                            class="w-full py-2 px-4 mt-4 bg-black text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+                        >
+                            Log in
+                        </button>
+                    </form>
+
+                    <p class="mt-4 text-center text-sm text-gray-600">
+                        Don't have an account?
+                        <a href="/sign-up" class="font-semibold text-blue-600 hover:text-blue-500">
+                            Sign up
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

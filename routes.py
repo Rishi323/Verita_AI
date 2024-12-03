@@ -6,12 +6,23 @@ from fine_tuning import prepare_dataset, fine_tune_model
 from grading_framework import grade_transcription, UX_FRAMEWORKS
 from sqlalchemy.sql import func
 import logging
-import traceback
 import os
 import base64
 import dotenv
 from openai import OpenAI
 from flask import Flask, request, jsonify, render_template
+from datetime import datetime
+from werkzeug.utils import secure_filename
+from supabase import create_client, Client
+import os
+from supabase import create_client, Client
+import traceback
+import time
+import functools
+from datetime import datetime, timedelta
+from cachetools import TTLCache
+import openai
+from openai import RateLimitError, APIError
 
 IMAGE_PARSE_PROMPT = """
 You are given different images to digest along with a discussion guide and additional context. Your role is to act as an expert user researcher who is extremely knowledgeable in the world of enterprise software.
@@ -54,13 +65,78 @@ Refer to each image by its number. Wait for a user response before moving on to 
 Space out the general questions throughout the interview, DO NOT ask them all at the beginning. Ask at most one general question at the beginning. There may be contexts where a general question is a suitable follow-up to a user's response.
 """
 
+UX_ANALYSIS_PROMPT = """You are a UX expert analyzing A/B test variants. Use the following frameworks to analyze the images:
+1. Nielsen's 10 Usability Heuristics
+2. Gestalt Principles
+3. Visual Hierarchy
+4. Color Theory
+5. Accessibility Guidelines
+
+Compare Variant A and Variant B, focusing on:
+1. Visual Appeal and First Impressions
+2. Layout and Information Architecture
+3. Call-to-Action Effectiveness
+4. Potential User Pain Points
+5. Accessibility Concerns
+
+Provide specific recommendations for improvement and predict which variant will perform better.
+
+Variant A: {variant_a_description}
+Variant B: {variant_b_description}
+
+Additional Context: {additional_info}
+"""
+
 dotenv.load_dotenv()
 client = OpenAI()
 client.api_key = os.environ.get("OPENAI_API_KEY")
 
 app = Flask(__name__)
 
+# Cache for storing analysis results (TTL of 1 hour)
+analysis_cache = TTLCache(maxsize=100, ttl=3600)
+
+def retry_with_exponential_backoff(
+    func,
+    initial_delay: float = 1,
+    exponential_base: float = 2,
+    max_retries: int = 3
+):
+    """Retry a function with exponential backoff."""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        delay = initial_delay
+        num_retries = 0
+        
+        while True:
+            try:
+                return func(*args, **kwargs)
+            
+            except RateLimitError as e:
+                if num_retries >= max_retries:
+                    logger.error(f"Rate limit exceeded after {max_retries} retries")
+                    raise e
+                
+                logger.warning(f"Rate limit hit, waiting {delay} seconds...")
+                time.sleep(delay)
+                delay *= exponential_base
+                num_retries += 1
+            
+            except APIError as e:
+                if num_retries >= max_retries:
+                    logger.error(f"API error after {max_retries} retries: {str(e)}")
+                    raise e
+                
+                logger.warning(f"API error, retrying in {delay} seconds...")
+                time.sleep(delay)
+                delay *= exponential_base
+                num_retries += 1
+    
+    return wrapper
+
+@retry_with_exponential_backoff
 def get_openai_response(imageList, additionalInfo, guide_content=None):
+    """Get response from OpenAI with retry logic."""
     # Format the prompt with discussion guide and additional info
     formatted_prompt = IMAGE_PARSE_PROMPT.format(
         discussion_guide=guide_content if guide_content else "No discussion guide provided.",
@@ -93,8 +169,150 @@ def get_openai_response(imageList, additionalInfo, guide_content=None):
     )
     return response.choices[0].message.content
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+def get_image_base64(file_path):
+    try:
+        with open(file_path, "rb") as image_file:
+            return base64.b64encode(image_file.read()).decode('utf-8')
+    except Exception as e:
+        print(f"Error encoding image: {str(e)}")
+        return None
+
+def analyze_variants_with_gpt(variant_a_path, variant_b_path, test_info):
+    """Analyze variants with GPT with fallback options"""
+    try:
+        # First, check if we have a cached analysis in Supabase
+        supabase = create_client(app.config['SUPABASE_URL'], app.config['SUPABASE_SERVICE_ROLE_KEY'])
+        cached_analysis = supabase.table('ab_test_analyses').select('*').eq('test_id', test_info['test_id']).execute()
+        
+        if cached_analysis.data:
+            logger.info(f"Using cached analysis for test {test_info['test_id']}")
+            return cached_analysis.data[0]['analysis']
+
+        # If no cache, try GPT analysis with retries
+        max_retries = 3
+        retry_delay = 5  # Start with 5 seconds delay
+        
+        for attempt in range(max_retries):
+            try:
+                # Get base64 encoded images
+                image_a_base64 = get_image_base64(variant_a_path)
+                image_b_base64 = get_image_base64(variant_b_path)
+                
+                if not image_a_base64 or not image_b_base64:
+                    raise ValueError("Failed to encode images")
+
+                # Prepare analysis with metrics if available
+                metrics_data = get_test_metrics(test_info['test_id'])
+                metrics_summary = ""
+                if metrics_data:
+                    metrics_summary = f"""
+                    Current Metrics:
+                    Variant A: {metrics_data['A']['views']} views, {metrics_data['A']['clicks']} clicks, {metrics_data['A']['ctr']}% CTR
+                    Variant B: {metrics_data['B']['views']} views, {metrics_data['B']['clicks']} clicks, {metrics_data['B']['ctr']}% CTR
+                    """
+
+                # Get GPT analysis
+                analysis = get_openai_response(
+                    [image_a_base64, image_b_base64],
+                    {
+                        'test_name': test_info['name'],
+                        'metrics': metrics_summary
+                    }
+                )
+                
+                if analysis:
+                    return analysis
+
+            except RateLimitError:
+                if attempt < max_retries - 1:
+                    logger.warning(f"Rate limit hit, attempt {attempt + 1}/{max_retries}. Waiting {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Exponential backoff
+                else:
+                    # If all retries failed, return a basic statistical analysis
+                    return generate_fallback_analysis(test_info['test_id'])
+            except Exception as e:
+                logger.error(f"Error in GPT analysis attempt {attempt + 1}: {str(e)}")
+                if attempt == max_retries - 1:
+                    return generate_fallback_analysis(test_info['test_id'])
+                time.sleep(retry_delay)
+                retry_delay *= 2
+
+        return None
+
+    except Exception as e:
+        logger.error(f"Error in analyze_variants_with_gpt: {str(e)}")
+        return None
+
+def generate_fallback_analysis(test_id):
+    """Generate a basic statistical analysis when GPT analysis is unavailable"""
+    try:
+        metrics = get_test_metrics(test_id)
+        if not metrics:
+            return "Unable to generate analysis due to insufficient data."
+
+        # Calculate statistical significance using basic metrics
+        variant_a = metrics['A']
+        variant_b = metrics['B']
+        
+        analysis = f"""Statistical Analysis (GPT Analysis Currently Unavailable):
+
+1. Performance Metrics:
+   Variant A: {variant_a['views']} views, {variant_a['clicks']} clicks, {variant_a['ctr']}% CTR
+   Variant B: {variant_b['views']} views, {variant_b['clicks']} clicks, {variant_b['ctr']}% CTR
+
+2. Key Findings:
+   - {'Variant A' if variant_a['ctr'] > variant_b['ctr'] else 'Variant B'} is currently performing better in terms of CTR
+   - Difference in CTR: {abs(variant_a['ctr'] - variant_b['ctr']):.2f}%
+   
+3. Recommendations:
+   - Continue collecting more data to ensure statistical significance
+   - Monitor both variants for consistent performance
+   - Consider running the analysis again when the GPT service is available
+
+Note: This is a basic statistical analysis generated due to temporary unavailability of the GPT analysis service. For more detailed insights, please try running the GPT analysis again later."""
+
+        return analysis
+
+    except Exception as e:
+        logger.error(f"Error generating fallback analysis: {str(e)}")
+        return "Unable to generate analysis at this time. Please try again later."
+
+def track_variant_view(test_id, variant):
+    """Track when a variant is viewed"""
+    try:
+        supabase = create_client(app.config['SUPABASE_URL'], app.config['SUPABASE_SERVICE_ROLE_KEY'])
+        
+        metric_data = {
+            'test_id': test_id,
+            'variant': variant,
+            'metric_type': 'view',
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        
+        response = supabase.table('ab_test_metrics').insert(metric_data).execute()
+        return response.data
+    except Exception as e:
+        logger.error(f"Error tracking variant view: {str(e)}")
+        return None
+
+def track_variant_click(test_id, variant):
+    """Track when a variant is clicked"""
+    try:
+        supabase = create_client(app.config['SUPABASE_URL'], app.config['SUPABASE_SERVICE_ROLE_KEY'])
+        
+        metric_data = {
+            'test_id': test_id,
+            'variant': variant,
+            'metric_type': 'click',
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        
+        response = supabase.table('ab_test_metrics').insert(metric_data).execute()
+        return response.data
+    except Exception as e:
+        logger.error(f"Error tracking variant click: {str(e)}")
+        return None
 
 def init_routes(app, socketio):
     @app.route('/', methods=['GET'])
@@ -110,7 +328,7 @@ def init_routes(app, socketio):
         return render_template('assessmentold.html', frameworks=UX_FRAMEWORKS)
 
     @app.route('/features', methods=['GET'])
-    def login():
+    def features():
         return render_template('features.html')
     
     @app.route('/automated-transcription')
@@ -333,3 +551,319 @@ def init_routes(app, socketio):
     @app.route('/postresearch')
     def postresearch():
         return render_template('post-research-interview.html')
+    
+    @app.route('/login', methods=['GET', 'POST'])
+    def login():
+        if request.method == 'POST':
+            try:
+                data = request.get_json()
+                email = data.get('email')
+                password = data.get('password')
+
+                if not all([email, password]):
+                    return jsonify({'error': 'Missing email or password'}), 400
+
+                # Get Supabase client from app config
+                supabase = app.config['supabase']
+                
+                # Sign in user with Supabase
+                auth_response = supabase.auth.sign_in_with_password({
+                    'email': email,
+                    'password': password
+                })
+
+                if not auth_response or not auth_response.user:
+                    return jsonify({'error': 'Invalid credentials'}), 401
+
+                # Get user profile
+                profile_response = supabase.from_('user_profiles').select('*').eq('id', auth_response.user.id).execute()
+                
+                if hasattr(profile_response, 'error') and profile_response.error:
+                    logger.error(f"Profile fetch error: {profile_response.error}")
+                    return jsonify({'error': 'Failed to fetch user profile'}), 400
+
+                user_profile = profile_response.data[0] if profile_response.data else None
+
+                return jsonify({
+                    'success': True,
+                    'user': {
+                        'id': auth_response.user.id,
+                        'email': auth_response.user.email,
+                        'type': user_profile.get('user_type') if user_profile else None
+                    }
+                }), 200
+
+            except Exception as e:
+                logger.error(f"Login error: {str(e)}")
+                return jsonify({'error': 'An unexpected error occurred'}), 500
+
+        # GET request - render the login template
+        return render_template('login.html')
+
+    @app.route('/sign-up', methods=['GET', 'POST'])
+    def signup():
+        if request.method == 'POST':
+            try:
+                data = request.get_json()
+                name = data.get('name')
+                email = data.get('email')
+                password = data.get('password')
+                user_type = data.get('userType')
+
+                if not all([name, email, password, user_type]):
+                    return jsonify({'error': 'Missing required fields'}), 400
+
+                # Get Supabase client from app config
+                supabase = app.config['supabase']
+                
+                # Sign up user with Supabase
+                auth_response = supabase.auth.sign_up({
+                    'email': email,
+                    'password': password,
+                    'data': {
+                        'full_name': name
+                    }
+                })
+
+                if not auth_response or not auth_response.user:
+                    return jsonify({'error': 'No user data returned from sign up'}), 400
+
+                try:
+                    # Create user profile with user type
+                    profile_response = supabase.rpc(
+                        'create_user_profile',
+                        {
+                            'user_id': auth_response.user.id,
+                            'user_full_name': name,
+                            'user_email': email,
+                            'user_type': user_type
+                        }
+                    ).execute()
+
+                    if hasattr(profile_response, 'error') and profile_response.error:
+                        logger.error(f"Profile creation error: {profile_response.error}")
+                        # If profile creation fails, we should clean up the auth user
+                        supabase.auth.admin.delete_user(auth_response.user.id)
+                        return jsonify({'error': 'Failed to create user profile'}), 400
+
+                except Exception as profile_error:
+                    logger.error(f"Profile creation error: {str(profile_error)}")
+                    # Clean up auth user if profile creation fails
+                    supabase.auth.admin.delete_user(auth_response.user.id)
+                    return jsonify({'error': 'Failed to create user profile'}), 400
+
+                return jsonify({
+                    'success': True, 
+                    'user': {
+                        'id': auth_response.user.id,
+                        'email': auth_response.user.email,
+                        'type': user_type
+                    }
+                }), 200
+
+            except Exception as e:
+                logger.error(f"Sign-up error: {str(e)}")
+                return jsonify({'error': 'An unexpected error occurred'}), 500
+
+        # GET request - render the sign-up template
+        return render_template('sign-up.html')
+
+    @app.route('/onboarding/user-type')
+    def onboarding_user_type():
+        return render_template('onboarding/user-type.html')
+
+    @app.route('/onboarding/experience-level')
+    def onboarding_experience_level():
+        return render_template('onboarding/experience-level.html')
+
+    @app.route('/onboarding/goals')
+    def onboarding_goals():
+        return render_template('onboarding/goals.html')
+
+    @app.route('/onboarding/complete')
+    def onboarding_complete():
+        return render_template('onboarding/complete.html')
+
+# AB Testing Routes
+@app.route('/ab-testing')
+def ab_testing():
+    return render_template('ab-testing.html')
+
+@app.route('/api/ab-test', methods=['POST'])
+def create_ab_test():
+    try:
+        data = request.json
+        supabase = create_client(app.config['SUPABASE_URL'], app.config['SUPABASE_SERVICE_ROLE_KEY'])
+        
+        test_data = {
+            'name': data.get('name'),
+            'description': data.get('description'),
+            'traffic_split': data.get('trafficSplit', 50),
+            'status': 'active',
+            'created_at': datetime.utcnow().isoformat()
+        }
+        
+        response = supabase.table('ab_tests').insert(test_data).execute()
+        return jsonify(response.data[0])
+    except Exception as e:
+        logger.error(f"Error creating AB test: {str(e)}")
+        return jsonify({'error': 'Failed to create test'}), 500
+
+@app.route('/api/ab-test/<test_id>/variant', methods=['POST'])
+def upload_variant(test_id):
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+            
+        file = request.files['file']
+        variant_type = request.form.get('type')  # 'A' or 'B'
+        
+        if not file or not variant_type:
+            return jsonify({'error': 'Missing required fields'}), 400
+            
+        # Save file to Supabase storage
+        supabase = create_client(app.config['SUPABASE_URL'], app.config['SUPABASE_SERVICE_ROLE_KEY'])
+        
+        # Generate unique filename
+        filename = f"{test_id}_{variant_type}_{secure_filename(file.filename)}"
+        
+        # Upload to Supabase storage
+        file_path = f"variants/{filename}"
+        response = supabase.storage.from_('ab-test-variants').upload(file_path, file)
+        
+        # Get public URL
+        file_url = supabase.storage.from_('ab-test-variants').get_public_url(file_path)
+        
+        # Update test record with variant URL
+        variant_field = f"variant_{variant_type.lower()}_url"
+        supabase.table('ab_tests').update({variant_field: file_url}).eq('id', test_id).execute()
+        
+        return jsonify({'url': file_url})
+    except Exception as e:
+        logger.error(f"Error uploading variant: {str(e)}")
+        return jsonify({'error': 'Failed to upload variant'}), 500
+
+@app.route('/api/ab-test/<test_id>/track', methods=['POST'])
+def track_metric(test_id):
+    try:
+        data = request.json
+        metric_type = data.get('type')  # 'view' or 'click'
+        variant = data.get('variant')    # 'A' or 'B'
+        
+        if not all([metric_type, variant]) or metric_type not in ['view', 'click'] or variant not in ['A', 'B']:
+            return jsonify({'error': 'Invalid metric data'}), 400
+            
+        supabase = create_client(app.config['SUPABASE_URL'], app.config['SUPABASE_SERVICE_ROLE_KEY'])
+        
+        metric_data = {
+            'test_id': test_id,
+            'variant': variant,
+            'metric_type': metric_type,
+            'timestamp': datetime.utcnow().isoformat()
+        }
+        
+        response = supabase.table('ab_test_metrics').insert(metric_data).execute()
+        return jsonify({'success': True})
+    except Exception as e:
+        logger.error(f"Error tracking metric: {str(e)}")
+        return jsonify({'error': 'Failed to track metric'}), 500
+
+@app.route('/api/ab-test/<test_id>/metrics', methods=['GET'])
+def get_test_metrics(test_id):
+    try:
+        supabase = create_client(app.config['SUPABASE_URL'], app.config['SUPABASE_SERVICE_ROLE_KEY'])
+        
+        # Get all metrics for this test
+        response = supabase.table('ab_test_metrics').select('*').eq('test_id', test_id).execute()
+        
+        metrics = response.data
+        
+        # Process metrics
+        variant_metrics = {
+            'A': {'views': 0, 'clicks': 0},
+            'B': {'views': 0, 'clicks': 0}
+        }
+        
+        for metric in metrics:
+            variant = metric['variant']
+            metric_type = metric['metric_type']
+            if metric_type == 'view':
+                variant_metrics[variant]['views'] += 1
+            elif metric_type == 'click':
+                variant_metrics[variant]['clicks'] += 1
+        
+        # Calculate CTR
+        for variant in ['A', 'B']:
+            views = variant_metrics[variant]['views']
+            clicks = variant_metrics[variant]['clicks']
+            ctr = (clicks / views * 100) if views > 0 else 0
+            variant_metrics[variant]['ctr'] = round(ctr, 2)
+        
+        return jsonify(variant_metrics)
+        
+    except Exception as e:
+        logger.error(f"Error getting metrics: {str(e)}")
+        return jsonify({'error': 'Failed to get metrics'}), 500
+
+@app.route('/api/ab-test/<test_id>/analyze', methods=['POST'])
+def analyze_ab_test(test_id):
+    try:
+        # Check cache first
+        if test_id in analysis_cache:
+            logger.info(f"Returning cached analysis for test {test_id}")
+            return jsonify({'analysis': analysis_cache[test_id], 'cached': True})
+
+        supabase = create_client(app.config['SUPABASE_URL'], app.config['SUPABASE_SERVICE_ROLE_KEY'])
+        
+        # Get test data
+        test_response = supabase.table('ab_tests').select('*').eq('id', test_id).execute()
+        if not test_response.data:
+            return jsonify({'error': 'Test not found'}), 404
+            
+        test_data = test_response.data[0]
+        
+        # Check if we have both variants
+        if not test_data.get('variant_a_url') or not test_data.get('variant_b_url'):
+            return jsonify({'error': 'Both variants must be uploaded before analysis'}), 400
+        
+        try:
+            # Analyze variants with GPT
+            analysis = analyze_variants_with_gpt(
+                test_data['variant_a_url'],
+                test_data['variant_b_url'],
+                {'test_id': test_id, 'name': test_data['name']}
+            )
+            
+            if analysis:
+                # Store analysis in cache
+                analysis_cache[test_id] = analysis
+                
+                # Store analysis in database
+                analysis_data = {
+                    'test_id': test_id,
+                    'analysis': analysis,
+                    'created_at': datetime.utcnow().isoformat()
+                }
+                supabase.table('ab_test_analyses').insert(analysis_data).execute()
+                
+                return jsonify({'analysis': analysis})
+            else:
+                return jsonify({'error': 'Failed to analyze variants'}), 500
+                
+        except RateLimitError:
+            return jsonify({
+                'error': 'OpenAI API rate limit exceeded',
+                'message': 'Please try again in a few minutes'
+            }), 429
+        except APIError as e:
+            return jsonify({
+                'error': 'OpenAI API error',
+                'message': str(e)
+            }), 503
+            
+    except Exception as e:
+        logger.error(f"Error analyzing AB test: {str(e)}")
+        return jsonify({'error': 'Failed to analyze test', 'message': str(e)}), 500
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)

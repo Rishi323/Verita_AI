@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experience Level - Verita AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/static/js/auth-check.js"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50/50 to-rose-50/50">
+    <div class="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-900">What's Your Experience Level?</h1>
+            <p class="mt-2 text-sm text-gray-600">Select your level of expertise.</p>
+        </div>
+        <form id="experienceLevelForm" class="space-y-4">
+            <div class="space-y-4">
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="beginner" name="experienceLevel" value="Beginner" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                    <label for="beginner" class="block text-sm font-medium text-gray-700">Beginner</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="intermediate" name="experienceLevel" value="Intermediate" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                    <label for="intermediate" class="block text-sm font-medium text-gray-700">Intermediate</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="advanced" name="experienceLevel" value="Advanced" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                    <label for="advanced" class="block text-sm font-medium text-gray-700">Advanced</label>
+                </div>
+            </div>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Next
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_API_KEY);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+    const isAuthenticated = await requireAuth();
+    if (!isAuthenticated) return;
+    
+    // Rest of your page initialization code
+});
+
+        document.getElementById('experienceLevelForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const experienceLevel = formData.get('experienceLevel');
+            
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error) throw error;
+
+                const { data, error: updateError } = await supabase
+                    .from('user_profiles')
+                    .upsert({ user_id: user.id, experience_level: experienceLevel });
+
+                if (updateError) throw updateError;
+
+                window.location.href = 'templates/onboarding/goals.html';
+            } catch (error) {
+                console.error('Error:', error.message);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>
+

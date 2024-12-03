@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Type - Verita AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="/static/js/auth-check.js"></script>
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50/50 to-rose-50/50">
+    <div class="max-w-md w-full space-y-8 p-8 bg-white rounded-xl shadow-lg">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-900">Who Are You?</h1>
+            <p class="mt-2 text-sm text-gray-600">Select the option that best describes you.</p>
+        </div>
+        <form id="userTypeForm" class="space-y-4">
+            <div class="space-y-4">
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="designer" name="userType" value="Designer" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                    <label for="designer" class="block text-sm font-medium text-gray-700">Designer</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="freelancer" name="userType" value="Freelancer" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                    <label for="freelancer" class="block text-sm font-medium text-gray-700">Freelancer</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="uxResearcher" name="userType" value="UX Researcher" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                    <label for="uxResearcher" class="block text-sm font-medium text-gray-700">UX Researcher</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="student" name="userType" value="Student" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                    <label for="student" class="block text-sm font-medium text-gray-700">Student</label>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <input type="radio" id="other" name="userType" value="Other" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                    <label for="other" class="block text-sm font-medium text-gray-700">Other</label>
+                </div>
+            </div>
+            <div id="otherTypeContainer" class="hidden space-y-2">
+                <label for="otherType" class="block text-sm font-medium text-gray-700">Please specify:</label>
+                <input type="text" id="otherType" name="otherType" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md text-sm shadow-sm placeholder-gray-400 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500">
+            </div>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Next
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://czzddubdxtidgbmuxchz.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6emRkdWJkeHRpZGdibXV4Y2h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMwMDY2NjksImV4cCI6MjA0ODU4MjY2OX0.4rb-w9_XLiUuTZxjFE2YrieB5ILfG31jvMgJtGXaGzw';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.getElementById('other').addEventListener('change', function() {
+            document.getElementById('otherTypeContainer').style.display = this.checked ? 'block' : 'none';
+        });
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            const isAuthenticated = await requireAuth();
+            if (!isAuthenticated) return;
+        });
+
+        document.getElementById('userTypeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const userType = formData.get('userType');
+            const otherType = formData.get('otherType');
+            const finalUserType = userType === 'Other' ? otherType : userType;
+            
+            try {
+                const { data: { user }, error } = await supabase.auth.getUser();
+                if (error) throw error;
+
+                const { error: updateError } = await supabase
+                    .from('user_profiles')
+                    .update({ user_type: finalUserType })
+                    .eq('id', user.id);
+
+                if (updateError) throw updateError;
+
+                // Redirect to the next onboarding step
+                window.location.href = '/onboarding/experience-level';
+            } catch (error) {
+                console.error('Error:', error.message);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -54,5 +54,17 @@ def resources():
 def postresearch():
     return render_template('post-research-interview.html')
 
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+@app.route('/sign-up')
+def signup():
+    return render_template('sign-up.html')
+
+@app.route('/ab-testing')
+def usabilitytest():
+    return render_template('ab-testing.html')
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
