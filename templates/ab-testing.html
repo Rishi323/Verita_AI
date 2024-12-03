@@ -99,347 +99,427 @@
     </div>
 
     <script>
+        let currentTestId = null;
+        let analysisInProgress = false;
+        let retryCount = 0;
+        const MAX_RETRIES = 3;
+        
+        // Metric tracking functions
+        async function trackVariantView(testId, variant) {
+            try {
+                const response = await fetch(`/api/ab-test/${testId}/track`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'view',
+                        variant: variant
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to track view');
+            } catch (error) {
+                console.error('Error tracking view:', error);
+            }
+        }
+
+        async function trackVariantClick(testId, variant) {
+            try {
+                const response = await fetch(`/api/ab-test/${testId}/track`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        type: 'click',
+                        variant: variant
+                    })
+                });
+                if (!response.ok) throw new Error('Failed to track click');
+            } catch (error) {
+                console.error('Error tracking click:', error);
+            }
+        }
+
+        async function createABTest() {
+            const form = document.getElementById('abTestForm');
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch('/api/ab-test', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: formData.get('name'),
+                        description: formData.get('description'),
+                        traffic_split: parseInt(formData.get('traffic_split'))
+                    })
+                });
+                
+                if (!response.ok) throw new Error('Failed to create test');
+                
+                const data = await response.json();
+                currentTestId = data.id;
+                
+                // Enable variant upload
+                document.querySelectorAll('.variant-upload').forEach(el => el.disabled = false);
+                
+                return data;
+            } catch (error) {
+                console.error('Error creating test:', error);
+                alert('Failed to create test');
+            }
+        }
+
+        async function uploadVariant(type, file) {
+            if (!currentTestId) {
+                alert('Please create a test first');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', type);
+            
+            try {
+                const response = await fetch(`/api/ab-test/${currentTestId}/variant`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) throw new Error('Failed to upload variant');
+                
+                const data = await response.json();
+                document.querySelector(`#variant${type}Preview`).src = data.url;
+                
+                return data;
+            } catch (error) {
+                console.error('Error uploading variant:', error);
+                alert('Failed to upload variant');
+            }
+        }
+
+        async function fetchTestData() {
+            if (!currentTestId) return;
+            
+            try {
+                const response = await fetch(`/api/ab-test/${currentTestId}/metrics`);
+                if (!response.ok) throw new Error('Failed to fetch metrics');
+                
+                const data = await response.json();
+                updateMonitoringStats(data);
+                updateStatsChart(data);
+            } catch (error) {
+                console.error('Error fetching test data:', error);
+            }
+        }
+
+        function updateMonitoringStats(data) {
+            for (const variant of ['A', 'B']) {
+                const metrics = data[variant];
+                document.querySelector(`#variant${variant}Views`).textContent = metrics.views;
+                document.querySelector(`#variant${variant}Clicks`).textContent = metrics.clicks;
+                document.querySelector(`#variant${variant}CTR`).textContent = `${metrics.ctr}%`;
+            }
+        }
+
+        function updateStatsChart(data) {
+            const ctx = document.getElementById('metricsChart').getContext('2d');
+            
+            if (window.metricsChart) {
+                window.metricsChart.destroy();
+            }
+            
+            window.metricsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Views', 'Clicks', 'CTR (%)'],
+                    datasets: [
+                        {
+                            label: 'Variant A',
+                            data: [
+                                data.A.views,
+                                data.A.clicks,
+                                data.A.ctr
+                            ],
+                            backgroundColor: 'rgba(59, 130, 246, 0.5)'
+                        },
+                        {
+                            label: 'Variant B',
+                            data: [
+                                data.B.views,
+                                data.B.clicks,
+                                data.B.ctr
+                            ],
+                            backgroundColor: 'rgba(239, 68, 68, 0.5)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize metrics polling
+        setInterval(fetchTestData, 5000); // Update every 5 seconds
+
+        // Add notification functions
+        function showNotification(message, type = 'error', duration = 5000) {
+            const notifDiv = document.createElement('div');
+            const bgColor = type === 'error' ? 'bg-red-100 border-red-500 text-red-700' : 
+                           type === 'warning' ? 'bg-yellow-100 border-yellow-500 text-yellow-700' :
+                           'bg-blue-100 border-blue-500 text-blue-700';
+            
+            notifDiv.className = `fixed top-4 right-4 ${bgColor} border-l-4 p-4 rounded shadow-lg`;
+            notifDiv.innerHTML = `
+                <div class="flex items-center">
+                    <div class="py-1">
+                        <svg class="h-6 w-6 mr-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            ${type === 'error' ? 
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 0v4m0-4h4m-4 0H8"/>' :
+                                type === 'warning' ?
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>' :
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+                            }
+                        </svg>
+                    </div>
+                    <div>${message}</div>
+                </div>
+            `;
+            document.body.appendChild(notifDiv);
+            setTimeout(() => notifDiv.remove(), duration);
+        }
+
+        async function analyzeTest() {
+            if (!currentTestId || analysisInProgress) return;
+            
+            try {
+                analysisInProgress = true;
+                const analyzeButton = document.getElementById('analyzeButton');
+                analyzeButton.disabled = true;
+                analyzeButton.innerHTML = '<span class="animate-pulse">Analyzing...</span>';
+                
+                const response = await fetch(`/api/ab-test/${currentTestId}/analyze`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (response.status === 429) {
+                        showNotification('Rate limit exceeded. Using statistical analysis instead.', 'warning');
+                    } else {
+                        showNotification(errorData.message || 'Failed to analyze variants', 'error');
+                        return;
+                    }
+                }
+                
+                const data = await response.json();
+                
+                // Update the recommendations section
+                const recommendationsContent = document.getElementById('recommendations-content');
+                recommendationsContent.innerHTML = `
+                    <div class="prose">
+                        <h4 class="text-lg font-semibold mb-2">Analysis Results</h4>
+                        <div class="whitespace-pre-wrap">${data.analysis}</div>
+                        ${data.cached ? '<div class="text-sm text-gray-500 mt-2">(Cached analysis)</div>' : ''}
+                    </div>
+                `;
+                
+                // Switch to results tab
+                switchTab('results');
+                
+            } catch (error) {
+                showNotification('An error occurred while analyzing the variants', 'error');
+                console.error('Analysis error:', error);
+            } finally {
+                analysisInProgress = false;
+                const analyzeButton = document.getElementById('analyzeButton');
+                analyzeButton.disabled = false;
+                analyzeButton.innerHTML = 'Analyze Variants';
+            }
+        }
+
         // Content templates
         const templates = {
             setup: `
                 <h2 class="text-2xl font-bold mb-6">Create A/B Test</h2>
-                <div class="bg-white rounded-lg shadow p-6 space-y-6">
+                <form id="abTestForm" class="bg-white rounded-lg shadow p-6 space-y-6">
                     <div>
                         <label class="block text-sm font-medium mb-2">Test Name</label>
-                        <input type="text" class="w-full p-3 border rounded-lg" placeholder="Enter test name">
+                        <input type="text" id="testName" class="w-full p-2 border rounded" placeholder="Enter test name">
                     </div>
-
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Test Description</label>
+                        <textarea id="testDescription" class="w-full p-2 border rounded" rows="3" placeholder="Enter test description"></textarea>
+                    </div>
                     <div class="grid grid-cols-2 gap-6">
+                        <!-- Variant A -->
                         <div>
                             <label class="block text-sm font-medium mb-2">Variant A</label>
-                            <div class="upload-area rounded-lg p-8 text-center" id="variantA-upload">
-                                <input type="file" class="hidden" id="variantA-input" accept="image/*" onchange="handleFileUpload(event, 'variantA')">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                </svg>
-                                <p class="mt-2 text-sm text-gray-600">Upload Variant A</p>
-                                <button onclick="document.getElementById('variantA-input').click()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 inline-flex items-center">
-                                    <span class="mr-2">+</span> Choose File
-                                </button>
-                                <div id="variantA-preview" class="mt-4"></div>
+                            <div class="upload-area p-4 text-center cursor-pointer relative">
+                                <input type="file" 
+                                    accept="image/*" 
+                                    onchange="handleFileUpload(event, 'A')" 
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    aria-label="Upload Variant A">
+                                <div class="space-y-2">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                    </svg>
+                                    <div class="text-sm text-gray-600">Click to upload or drag and drop</div>
+                                    <div class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</div>
+                                </div>
+                                <img id="variantAPreview" class="mt-4 max-w-full h-auto hidden rounded-lg" alt="Variant A Preview">
                             </div>
                         </div>
+                        <!-- Variant B -->
                         <div>
                             <label class="block text-sm font-medium mb-2">Variant B</label>
-                            <div class="upload-area rounded-lg p-8 text-center" id="variantB-upload">
-                                <input type="file" class="hidden" id="variantB-input" accept="image/*" onchange="handleFileUpload(event, 'variantB')">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-                                </svg>
-                                <p class="mt-2 text-sm text-gray-600">Upload Variant B</p>
-                                <button onclick="document.getElementById('variantB-input').click()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 inline-flex items-center">
-                                    <span class="mr-2">+</span> Choose File
-                                </button>
-                                <div id="variantB-preview" class="mt-4"></div>
+                            <div class="upload-area p-4 text-center cursor-pointer relative">
+                                <input type="file" 
+                                    accept="image/*" 
+                                    onchange="handleFileUpload(event, 'B')" 
+                                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    aria-label="Upload Variant B">
+                                <div class="space-y-2">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                    </svg>
+                                    <div class="text-sm text-gray-600">Click to upload or drag and drop</div>
+                                    <div class="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</div>
+                                </div>
+                                <img id="variantBPreview" class="mt-4 max-w-full h-auto hidden rounded-lg" alt="Variant B Preview">
                             </div>
                         </div>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Test Goal</label>
-                        <select class="w-full p-3 border rounded-lg">
-                            <option value="">Select a goal</option>
-                            <option>Increase Click-Through Rate (CTR)</option>
-                            <option>Improve Form Completion Rate</option>
-                            <option>Reduce Bounce Rate</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium mb-2">Test Duration</label>
-                        <input type="text" class="w-full p-3 border rounded-lg" placeholder="e.g., 7 days">
-                    </div>
-
                     <div>
                         <label class="block text-sm font-medium mb-2">Traffic Split</label>
-                        <input type="range" class="w-full" min="0" max="100" value="50" id="trafficSplit">
-                        <div class="flex justify-between text-sm text-gray-600 mt-2">
-                            <span>Variant A: 50%</span>
-                            <span>Variant B: 50%</span>
+                        <input type="range" id="trafficSplit" class="w-full" min="0" max="100" value="50" oninput="updateTrafficSplit(event)">
+                        <div class="flex justify-between text-sm text-gray-600 mt-1">
+                            <span id="variantASplit">50%</span>
+                            <span id="variantBSplit">50%</span>
                         </div>
                     </div>
-
-                    <button class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 mb-4">
-                        Invite Users to Test
-                    </button>
-
-                    <button class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
-                        Create Test
-                    </button>
-                </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Create Test</button>
+                </form>
             `,
             monitoring: `
-        <div class="max-w-4xl mx-auto">
-            <h2 class="text-2xl font-bold mb-6">Test Monitoring</h2>
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <div class="relative mb-6">
-                    <select class="w-full p-3 border rounded-lg appearance-none">
-                        <option>Homepage CTA Test</option>
-                    </select>
-                    <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
+                <h2 class="text-2xl font-bold mb-6">Test Monitoring</h2>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <!-- Variant A -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">Variant A</h3>
+                            <img id="variantAPreview" class="w-full h-48 object-cover rounded mb-4" src="" alt="Variant A">
+                            <div class="stats">
+                                <p>Views: <span id="variantAViews">0</span></p>
+                                <p>Clicks: <span id="variantAClicks">0</span></p>
+                                <p>CTR: <span id="variantACTR">0%</span></p>
+                            </div>
+                        </div>
+                        <!-- Variant B -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-4">Variant B</h3>
+                            <img id="variantBPreview" class="w-full h-48 object-cover rounded mb-4" src="" alt="Variant B">
+                            <div class="stats">
+                                <p>Views: <span id="variantBViews">0</span></p>
+                                <p>Clicks: <span id="variantBClicks">0</span></p>
+                                <p>CTR: <span id="variantBCTR">0%</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <button onclick="fetchTestData()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            Refresh Metrics
+                        </button>
+                        <div class="text-sm text-gray-600">
+                            Last updated: <span id="lastUpdated">Never</span>
+                        </div>
                     </div>
                 </div>
-
-                <div class="space-y-6">
-                    <div class="bg-white rounded-lg">
-                        <canvas id="monitoringChart" class="w-full h-[300px]"></canvas>
+            `,
+            results: `
+                <h2 class="text-2xl font-bold mb-6">Test Results</h2>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div id="testResults" class="space-y-6">
+                        <!-- Results will be populated dynamically -->
                     </div>
-
-                    <div>
-                        <h3 class="text-xl font-semibold">Homepage CTA Test</h3>
-                        <p class="text-gray-600">Test period: 2023-05-01 to 2023-05-08</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="bg-blue-50 p-6 rounded-lg">
-                            <h3 class="font-semibold mb-4">Variant A: Original</h3>
-                            <div class="space-y-2">
-                                <p>Visitors: 1000</p>
-                                <p>Conversions: 150</p>
-                                <p>Conversion Rate: 15.00%</p>
-                            </div>
-                        </div>
-                        <div class="bg-red-50 p-6 rounded-lg">
-                            <h3 class="font-semibold mb-4">Variant B: New Design</h3>
-                            <div class="space-y-2">
-                                <p>Visitors: 1000</p>
-                                <p>Conversions: 180</p>
-                                <p>Conversion Rate: 18.00%</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h3 class="text-lg font-semibold mb-4">User Progress</h3>
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white">AL</div>
-                                    <div>
-                                        <p class="font-medium">Alice</p>
-                                        <p class="text-sm text-gray-600">alice@example.com</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2 flex-1 max-w-sm ml-4">
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-black h-2 rounded-full" style="width: 75%"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-600">75%</span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white">BO</div>
-                                    <div>
-                                        <p class="font-medium">Bob</p>
-                                        <p class="text-sm text-gray-600">bob@example.com</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2 flex-1 max-w-sm ml-4">
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-black h-2 rounded-full" style="width: 50%"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-600">50%</span>
-                                </div>
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white">CH</div>
-                                    <div>
-                                        <p class="font-medium">Charlie</p>
-                                        <p class="text-sm text-gray-600">charlie@example.com</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2 flex-1 max-w-sm ml-4">
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-black h-2 rounded-full" style="width: 100%"></div>
-                                    </div>
-                                    <span class="text-sm text-gray-600">100%</span>
-                                </div>
+                    <div id="aiRecommendations" class="mt-8">
+                        <h3 class="text-lg font-semibold mb-4">AI Recommendations</h3>
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <div id="recommendations-content" class="prose">
+                                <!-- AI recommendations will be populated dynamically -->
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    `,
-
-    results: `
-    <div class="max-w-4xl mx-auto">
-        <h2 class="text-2xl font-bold mb-6">Test Results</h2>
-        <div class="bg-white rounded-lg shadow-sm p-6 space-y-8">
-            <div class="relative">
-                <select class="w-full p-3 border rounded-lg appearance-none">
-                    <option>Homepage CTA Test</option>
-                </select>
-                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                    </svg>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-lg">
-                <canvas id="resultsChart" class="w-full h-[300px]"></canvas>
-            </div>
-
-            <div class="grid grid-cols-2 gap-6">
-                <div class="bg-blue-50 p-6 rounded-lg">
-                    <h3 class="font-semibold mb-4">Variant A: Original</h3>
-                    <div class="space-y-2">
-                        <p>Visitors: 1000</p>
-                        <p>Conversions: 150</p>
-                        <p>Conversion Rate: 15.00%</p>
-                    </div>
-                </div>
-                <div class="bg-red-50 p-6 rounded-lg">
-                    <h3 class="font-semibold mb-4">Variant B: New Design</h3>
-                    <div class="space-y-2">
-                        <p>Visitors: 1000</p>
-                        <p>Conversions: 180</p>
-                        <p>Conversion Rate: 18.00%</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <div class="flex justify-between items-center">
-                    <h3 class="text-lg font-semibold">Winner: Variant B</h3>
-                    <span class="text-sm text-gray-600">95% Confidence</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2">
-                    <div class="bg-black h-2 rounded-full" style="width: 95%"></div>
-                </div>
-            </div>
-
-            <div class="bg-gray-50 p-6 rounded-lg">
-                <h3 class="text-lg font-semibold mb-4">AI-Generated Insights</h3>
-                <ul class="space-y-2 text-gray-700">
-                    <li class="flex items-start">
-                        <span class="mr-2">•</span>
-                        <span>Variant B showed a significant improvement in conversion rate.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="mr-2">•</span>
-                        <span>The new design resonated better with mobile users, increasing mobile conversions by 22%.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="mr-2">•</span>
-                        <span>Users spent on average 15 seconds longer on Variant B, indicating higher engagement.</span>
-                    </li>
-                </ul>
-            </div>
-
-            <button class="w-full bg-black text-white py-3 rounded-lg hover:bg-gray-800 flex items-center justify-center space-x-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3v-13"/>
-                </svg>
-                <span>Download Full Report</span>
-            </button>
-        </div>
-    </div>
-`
-};
-
-// Initialize the dashboard
-document.addEventListener('DOMContentLoaded', () => {
-    switchTab('setup');
-    initializeEventListeners();
-});
-
-function switchTab(tabName) {
-    // Update active tab styling
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('bg-blue-700');
-    });
-    document.querySelector(`[data-tab="${tabName}"]`).classList.add('bg-blue-700');
-
-    // Update content
-    const contentArea = document.getElementById('content-area');
-    contentArea.innerHTML = templates[tabName];
-
-    // Initialize charts if needed
-    if (tabName === 'monitoring' || tabName === 'results') {
-        initializeCharts();
-    }
-}
-
-function handleFileUpload(event, variantId) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const previewDiv = document.getElementById(`${variantId}-preview`);
-            previewDiv.innerHTML = `
-                <img src="${e.target.result}" alt="${file.name}" class="image-preview mt-4 max-h-48 mx-auto">
-                <p class="mt-2 text-sm text-gray-600">${file.name}</p>
-            `;
+            `
         };
-        reader.readAsDataURL(file);
-    }
-}
 
-function initializeCharts() {
-    const chartConfig = {
-        type: 'bar',
-        data: {
-            labels: ['Variant A', 'Variant B'],
-            datasets: [{
-                label: 'Conversion Rate (%)',
-                data: [15, 18],
-                backgroundColor: ['#000', '#000'],
-                borderRadius: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 20,
-                    ticks: {
-                        stepSize: 5
-                    },
-                    grid: {
-                        display: true
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
-            },
-            plugins: {
-                legend: {
-                    display: false
-                }
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTab('setup');
+            initializeEventListeners();
+        });
+
+        function initializeEventListeners() {
+            const trafficSplit = document.getElementById('trafficSplit');
+            if (trafficSplit) {
+                trafficSplit.addEventListener('input', updateTrafficSplit);
             }
         }
-    };
 
-    const monitoringChart = document.getElementById('monitoringChart');
-    const resultsChart = document.getElementById('resultsChart');
+        function handleFileUpload(event, variantType) {
+            const file = event.target.files[0];
+            if (file) {
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const previewElement = document.getElementById(`variant${variantType}Preview`);
+                    if (previewElement) {
+                        previewElement.src = e.target.result;
+                        previewElement.style.display = 'block';
+                    }
+                };
+                reader.readAsDataURL(file);
+                
+                // Upload the file
+                uploadVariant(variantType, file);
+            }
+        }
 
-    if (monitoringChart) {
-        new Chart(monitoringChart, chartConfig);
-    }
+        function updateTrafficSplit(event) {
+            const value = event.target.value;
+            document.getElementById('variantASplit').textContent = `Variant A: ${value}%`;
+            document.getElementById('variantBSplit').textContent = `Variant B: ${100 - value}%`;
+        }
 
-    if (resultsChart) {
-        new Chart(resultsChart, chartConfig);
-    }
-}
-</script>
+        function switchTab(tabName) {
+            // Update active tab styling
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add('bg-blue-700');
+                } else {
+                    btn.classList.remove('bg-blue-700');
+                }
+            });
+
+            // Update content
+            document.querySelector('#content-area').innerHTML = templates[tabName];
+
+            // Initialize tab-specific functionality
+            if (tabName === 'monitoring' || tabName === 'results') {
+                fetchTestData();
+            }
+        }
+    </script>
 </body>
 </html>
